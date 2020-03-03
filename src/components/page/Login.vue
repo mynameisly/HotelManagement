@@ -2,9 +2,9 @@
     <div class="login-wrap">
         <div class="ms-login">
             <div class="ms-title">后台管理系统</div>
-            <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
-                <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+            <el-form :model="loginForm" :rules="rules" ref="login" label-width="0px" class="ms-content">
+                <el-form-item prop="number">
+                    <el-input v-model="loginForm.number" placeholder="number">
                         <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
@@ -12,7 +12,7 @@
                     <el-input
                         type="password"
                         placeholder="password"
-                        v-model="param.password"
+                        v-model="loginForm.password"
                         @keyup.enter.native="submitForm()"
                     >
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
@@ -28,25 +28,29 @@
 </template>
 
 <script>
+import { login } from '@/api/login'
 export default {
     data: function() {
         return {
-            param: {
-                username: 'admin',
-                password: '123123',
+            loginForm: {
+                number: '',
+                password: '',
             },
             rules: {
-                username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+                number: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
             },
         };
     },
     methods: {
-        submitForm() {
+        submitForm(loginForm) {
             this.$refs.login.validate(valid => {
                 if (valid) {
+                    login(loginForm) {
+                        
+                    }
                     this.$message.success('登录成功');
-                    localStorage.setItem('ms_username', this.param.username);
+                    localStorage.setItem('ms_username', this.loginForm.number);
                     this.$router.push('/');
                 } else {
                     this.$message.error('请输入账号和密码');
