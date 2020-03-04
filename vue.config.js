@@ -4,11 +4,11 @@ module.exports = {
     productionSourceMap: false,
     devServer: {
         proxy: {
-            '/json':{
+            '/HotelManagement':{
                 target:'http://120.24.186.190:8080',
                 changeOrigin:true,
                 pathRewrite:{
-                    '/json':''
+                    '^/HotelManagement':'/HotelManagement'
                 }
             }
         }

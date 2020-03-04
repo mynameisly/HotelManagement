@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { login } from '@/api/login'
+import axios from 'axios'
 export default {
     data: function() {
         return {
@@ -46,12 +46,13 @@ export default {
         submitForm(loginForm) {
             this.$refs.login.validate(valid => {
                 if (valid) {
-                    login(loginForm) {
-                        
-                    }
-                    this.$message.success('登录成功');
-                    localStorage.setItem('ms_username', this.loginForm.number);
-                    this.$router.push('/');
+                    ///HotelManagement/json/login/direct?number=xiaohei&password=123abc
+                    axios.get('/HotelManagement/json/login/direct?number=' + this.loginForm.number + '&password=' + this.loginForm.password).then((res) => {
+                        console.log('登录', res.data.data)
+                        this.$message.success('登录成功');
+                        localStorage.setItem('ms_username', this.loginForm.number);
+                        this.$router.push('/');
+                    })
                 } else {
                     this.$message.error('请输入账号和密码');
                     console.log('error submit!!');
