@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div class="crumbs">
+        <!-- <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
                     <i class="el-icon-lx-cascades"></i> 员工管理
                 </el-breadcrumb-item>
             </el-breadcrumb>
-        </div>
+        </div> -->
         <div class="container">
             <div class="handle-box">
                 <el-button
@@ -15,15 +15,15 @@
                     class="handle-del mr10"
                     @click="delAllSelection"
                 >批量删除</el-button>
-                <el-select v-model="query.address" placeholder="地址" class="handle-select mr10">
+                <el-select v-model="empForm.address" placeholder="地址" class="handle-select mr10">
                     <el-option key="1" label="广东省" value="广东省"></el-option>
                     <el-option key="2" label="湖南省" value="湖南省"></el-option>
                 </el-select>
-                <el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
+                <el-input v-model="empForm.name" placeholder="用户名" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <el-table
-                :data="tableData"
+                :data="empList"
                 border
                 class="table"
                 ref="multipleTable"
@@ -75,8 +75,8 @@
                 <el-pagination
                     background
                     layout="total, prev, pager, next"
-                    :current-page="query.pageIndex"
-                    :page-size="query.pageSize"
+                    :current-page="empForm.pageIndex"
+                    :page-size="empForm.pageSize"
                     :total="pageTotal"
                     @current-change="handlePageChange"
                 ></el-pagination>
@@ -107,13 +107,13 @@ export default {
     name: 'basetable',
     data() {
         return {
-            query: {
+            empForm: {
                 address: '',
                 name: '',
                 pageIndex: 1,
                 pageSize: 10
             },
-            tableData: [],
+            empList: [],
             multipleSelection: [],
             delList: [],
             editVisible: false,
@@ -129,15 +129,15 @@ export default {
     methods: {
         // 获取 easy-mock 的模拟数据
         getData() {
-            fetchData(this.query).then(res => {
+            fetchData(this.empForm).then(res => {
                 console.log(res);
-                this.tableData = res.list;
+                this.empList = res.list;
                 this.pageTotal = res.pageTotal || 50;
             });
         },
         // 触发搜索按钮
         handleSearch() {
-            this.$set(this.query, 'pageIndex', 1);
+            this.$set(this.empForm, 'pageIndex', 1);
             this.getData();
         },
         // 删除操作
@@ -148,7 +148,7 @@ export default {
             })
                 .then(() => {
                     this.$message.success('删除成功');
-                    this.tableData.splice(index, 1);
+                    this.empList.splice(index, 1);
                 })
                 .catch(() => {});
         },
@@ -176,11 +176,11 @@ export default {
         saveEdit() {
             this.editVisible = false;
             this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            this.$set(this.tableData, this.idx, this.form);
+            this.$set(this.empList, this.idx, this.form);
         },
         // 分页导航
         handlePageChange(val) {
-            this.$set(this.query, 'pageIndex', val);
+            this.$set(this.empForm, 'pageIndex', val);
             this.getData();
         }
     }

@@ -26,7 +26,7 @@ export default new Router({
                 },
                 {
                     path: '/employee',
-                    component: () => import(/* webpackChunkName: "table" */ '../pub/employee/index'),
+                    component: () => import(/* webpackChunkName: "table" */ '../pub/employee/a'),
                     meta: { title: '员工管理' }
                 },
                 {
