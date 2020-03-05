@@ -4,20 +4,6 @@
 
 > fontend-manage(Vue + Element UI) + backend (springboot) 的版本正在开发中，仓库地址：[hotelManagement](http://120.24.186.190/XXX)
 
-
-## 项目截图
-
-### 登录
-
-![Image text](https://github.com/mynameisly/HotelManagement/master/screenshots/login.png)
-
-### 默认皮肤
-
-![Image text](https://github.com/mynameisly/HotelManagement/master/screenshots/home.png)
-
-
-
-
 ## 前言
 
 酒店管理系统，基于 vue.js，使用 vue-cli3 脚手架，引用 Element UI 组件库，方便开发快速简洁好看的组件。分离颜色样式，支持手动切换主题色，而且很方便使用自定义主题色。

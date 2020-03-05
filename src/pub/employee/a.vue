@@ -83,6 +83,7 @@
 <script>
 import AddDialog from './add'
 import axios from 'axios'
+import { getempList } from '@/api/employee';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -108,22 +109,23 @@ export default {
     }
   },
   mounted () {
-    this.getempList()
+    this.getempList(null);
   },
   methods: {
-    getempList () { // 根据多个筛选条件查询,需管理员权限; 筛选条件为空时，默认查询所有数据
-      // axios.get('/json/academic/find?limit=&title=' + this.searchForm.title).then((res) => {
-      axios.get('/HotelManagement/json/employee/list?page=&limit=&number' + this.searchForm.number
-      + '&readName=' + this.searchForm.readName + '&sex=' + this.searchForm.sex)
-      .then((res) => {
-
+    handlePageChange(item) {
+      // console.log(item);// currentPage=1  pageSize=30条
+      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      this.getempList(para);
+    },
+    getempList(param) {
+      getempList(param).then(res => {
         // this.page.currentPage = res.data.page.page
         // this.page.pageSize = res.data.page.limit
         // this.page.totalPage = res.data.page.totalPages
         // this.page.totalSize = res.data.page.totalRows
-        this.empList = res.data.data
+        console.log('返回的数据是',res.data)
         console.log(res.data.data)
-        this.loading = false
+        this.loading = false;
       })
     },
     mouseEnter (data) {
@@ -170,17 +172,17 @@ export default {
         })
       })
     },
-    handlePageChange (item) {
-      axios.get('/HotelManagement/json/employee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
-        if (res.data.code === 0) {
-          this.page.currentPage = res.data.page.page
-          this.page.pageSize = res.data.page.limit
-          this.page.totalPage = res.data.page.totalPages
-          this.page.totalSize = res.data.page.totalRows
-          this.empList = res.data.data
-        }
-      })
-    }
+    // handlePageChange (item) {
+    //   axios.get('/HotelManagement/json/employee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
+    //     if (res.data.code === 0) {
+    //       this.page.currentPage = res.data.page.page
+    //       this.page.pageSize = res.data.page.limit
+    //       this.page.totalPage = res.data.page.totalPages
+    //       this.page.totalSize = res.data.page.totalRows
+    //       this.empList = res.data.data
+    //     }
+    //   })
+    // }
   }
 }
 </script>
