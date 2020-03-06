@@ -1,55 +1,40 @@
 <template>
-  <div id="noticeAdd">
+  <div id="roomtypeAdd">
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form ref="noticeForm" :model="item" :rules="rules" label-width="100px">
-        <el-form-item label="发布人:" prop="createPerson">
-          <el-input v-model="item.createPerson"  palceholder="请输入发布人" clearable/>
+      <el-form ref="roomtypeForm" :model="item" :rules="rules" label-width="100px">
+        <el-form-item label="房号：">
+          <el-input v-model="item.number" placeholder="请输入房号" clearable/>
         </el-form-item>
-        <el-form-item label="发布时间:" prop="createTime">
-          <el-date-picker
-            v-model="item.createTime"
-            type="datetime"
-            placeholder="请输入发布时间">
-          </el-date-picker>
+        <el-form-item label="客房类型：">
+          <el-input v-model="item.roomType" placeholder="请输入客房类型" clearable/>
         </el-form-item>
-        <el-form-item label="标题:" prop="title">
-          <el-input v-model="item.title"  palceholder="请输入标题" clearable/>
+        <el-form-item label="可住人数：">
+          <el-input v-model="item.peopleNum" placeholder="请输入可住人数" clearable/>
         </el-form-item>
-        <el-form-item label="通知内容:" prop="content">
-          <el-input type="textarea" :rows="2" v-model="item.content" resize="none" maxlength="200" show-word-limit palceholder="请输入通知内容"></el-input>
+        <el-form-item label="楼层：">
+          <el-input v-model="item.floor" placeholder="请输入楼层" clearable/>
         </el-form-item>
-         <el-form-item label="附件:" prop="fileId">
-           <!-- 调用上传文件接口拿到文件id，在发送新增请求 -->
-          <!-- <el-input v-model="item.fileId"  palceholder="请输入文件ID" clearable/> -->
-          <el-upload
-            action=""
-            drag
-            :show-file-list="false" 
-            :limit="1"
-            :before-upload="beforeupload"
-            :on-change="onchange"
-            :on-progress="uploadFileProcess"
-            >
-            <i v-if="fileFlag == false" 
-              class="el-icon-upload">
-            </i>
-            <div v-if="fileFlag == false" class="el-upload__text">将文件拖到此处，或<em>点击上传</em>最多可上传1个文件</div>
-            <el-progress 
-              v-if="fileFlag == true" 
-              type="circle" 
-              :percentage="fileUploadPercent"
-              style="margin-top:20px">
-            </el-progress>
-            <div class="el-upload__tip" slot="tip">支持doc,docx,txt,xlsx,ppt格式，且不超过10M</div>
-          </el-upload>
+        <el-form-item label="床型：">
+          <el-input v-model="item.bedType" placeholder="请输入床型" clearable/>
         </el-form-item>
-        <!--<el-form-item label="人员集合:" prop="userIdList">
-          <el-input v-model="item.userIdList"  palceholder="请输入人员集合" clearable/>
-        </el-form-item> -->
+          <el-form-item label="状态：">
+              <el-select v-model="item.state" placeholder="请输入状态" clearable>
+                  <el-option key="2" label="空闲" value="空闲"></el-option>
+                  <el-option key="2" label="在住" value="在住"></el-option>
+                  <el-option key="1" label="不可用" value="不可用"></el-option>
+                  <el-option key="2" label="正在打扫" value="正在打扫"></el-option>
+              </el-select>
+          </el-form-item>
+        <el-form-item label="最低价：">
+          <el-input v-model="item.startPrice" placeholder="请输入最低价" clearable/>
+        </el-form-item>
+        <el-form-item label="最高价：">
+          <el-input v-model="item.endPrice" placeholder="请输入最高价" clearable/>
+        </el-form-item>
       </el-form>
       <span slot="footer">
-      <el-button type="warning" @click="resetForm('noticeForm')">取消</el-button>
-      <el-button type="success" @click="submitForm('noticeForm')">提交</el-button>
+      <el-button type="warning" @click="resetForm('roomtypeForm')">取消</el-button>
+      <el-button type="success" @click="submitForm('roomtypeForm')">提交</el-button>
     </span>
     </el-dialog>
   </div>
@@ -70,20 +55,24 @@ export default {
       fileUploadPercent: 0,
       fileList: [],
       item: {
-        createPerson: '',
-        createTime: '',
-        title: '',
-        content: '',
-        fileId: '',
-        userIdList: ''
+        number: '',
+        roomType: '',
+        peopleNum: '',
+        floor: '',
+        bedType: '',
+        state: '',
+        startPrice: '',
+        endPrice: ''
       },
       rules: {
-        createPerson: [{ required: true, message: '请输入发布人', trigger: 'blur' }],
-        createTime: [{ required: true, message: '请输入发布时间', trigger: 'change' }],
-        title: [{ required: true, message: '请输入通知标题', trigger: 'blur' }],
-        content: [{ required: true, message: '请输入通知内容', trigger: 'blur' }],
-        // fileId: [{ required: true, message: '请输入文件ID', trigger: 'blur' }],
-        // userIdList: [{ required: true, message: '请输入人员集合', trigger: 'blur' }]
+        number: [{ required: true, message: '请输入', trigger: 'blur' }],
+        roomType: [{ required: true, message: '请输入', trigger: 'change' }],
+        peopleNum: [{ required: true, message: '请输入', trigger: 'blur' }],
+        floor: [{ required: true, message: '请输入', trigger: 'blur' }],
+        bedType: [{ required: true, message: '请输入', trigger: 'blur' }],
+        state: [{ required: true, message: '请输入', trigger: 'blur' }],
+        startPrice: [{ required: true, message: '请输入', trigger: 'blur' }],
+        endPrice: [{ required: true, message: '请输入', trigger: 'blur' }]
       }
     }
   },
@@ -158,9 +147,9 @@ export default {
         console.log(this.item.fileId)
       }).catch(() => false)
     },
-    submitForm (noticeForm) {
+    submitForm (roomtypeForm) {
       this.item.createTime = this.formateDate(this.item.createTime)
-      this.$refs.noticeForm.validate(valid => {
+      this.$refs.roomtypeForm.validate(valid => {
         if (valid) {
           this.$confirm('确认保存吗？', '是否保存', {
             cancelButtonText: '取消',
@@ -169,14 +158,14 @@ export default {
             type: 'warning'
           }).then(() => {
             this.$emit('confirmData', this.item)
-            this.resetForm('noticeForm')
+            this.resetForm('roomtypeForm')
           })
         }
       })
     },
-    resetForm (noticeForm) {
+    resetForm (roomtypeForm) {
       this.$nextTick(() => {
-        this.$refs.noticeForm.clearValidate()
+        this.$refs.roomtypeForm.clearValidate()
       })
       this.item = {}
       this.fileFlag = false;

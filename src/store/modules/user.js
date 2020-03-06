@@ -7,14 +7,14 @@ const state = {
   headImg: '',
   // roles: [],
   data: {},
-  isLogin: 0 // 初始时候给 isLogin=0表示未登录
+  // isLogin: 0 // 初始时候给 isLogin=0表示未登录
 }
 
 const mutations = {
   // 改变登录状态， 为1表示已登录
-  CHANGE_LOGIN (state) {
-    state.isLogin = 1
-  },
+  // CHANGE_LOGIN (state) {
+  //   state.isLogin = 1
+  // },
   USER_MUTATION: (state, userdata) => {
     // setToken(userdata.token)
     // state.token = userdata.token;
@@ -28,9 +28,9 @@ const mutations = {
 }
 
 const actions = {
-  changeLogin ({ commit }) {
-    commit('CHANGE_LOGIN')
-  },
+  // changeLogin ({ commit }) {
+  //   commit('CHANGE_LOGIN')
+  // },
   setUserdata({ commit }, userdata) {
     commit('USER_MUTATION', userdata);
   },

@@ -26,8 +26,13 @@ export default new Router({
               },
               {
                 path: '/employee',
-                component: () => import(/* webpackChunkName: "table" */ '../pub/employee/a'),
+                component: () => import(/* webpackChunkName: "table" */ '../pub/employee/index'),
                 meta: { title: '员工管理' }
+              },
+              {
+                path: '/position',
+                component: () => import(/* webpackChunkName: "table" */ '../pub/employee/position'),
+                meta: { title: '职位管理' }
               },
               {
                 path: '/roomservice',

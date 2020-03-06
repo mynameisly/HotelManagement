@@ -51,20 +51,14 @@ export default {
         submitForm(loginForm) {
           this.$refs.login.validate(valid => {
             if (valid) {
-              ///HotelManagement/json/login/direct?number=xiaohei&password=123abc
-              // axios.get('/HotelManagement/json/login/direct?number=' + this.loginForm.number + '&password=' + this.loginForm.password).then((res) => {
-              //     console.log('登录', res.data.data)
-              //     this.$message.success('登录成功');
-              //     localStorage.setItem('ms_username', this.loginForm.number);
-              //     this.$router.push('/');
-              // })
               const para = {
                 number: this.loginForm.number,
                 password: this.loginForm.password
-                // type: this.loginForm.type
               };
+              console.log('用户名和密码',para)
               login(para).then(res => {
-                if (res.code === 0) {
+                console.log('登录成功之后返回的res是：',res)
+                if (res.data.code === 0) {
                   this.$message({
                     message: '登录成功',
                     type: 'success'

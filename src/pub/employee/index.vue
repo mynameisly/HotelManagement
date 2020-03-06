@@ -1,219 +1,199 @@
 <template>
-    <div>
-        <!-- <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 员工管理
-                </el-breadcrumb-item>
-            </el-breadcrumb>
-        </div> -->
-        <div class="container">
-            <div class="handle-box">
-                <el-button
-                    type="primary"
-                    icon="el-icon-delete"
-                    class="handle-del mr10"
-                    @click="delAllSelection"
-                >批量删除</el-button>
-                <el-select v-model="empForm.address" placeholder="地址" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
+  <div id="employee">
+    <el-form v-model="searchForm" :inline="true">
+      <el-row>
+        <el-col :span="6" :offset="1">
+          <el-form-item label="账号：">
+            <el-input v-model="searchForm.number" placeholder="请输入账号" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="姓名：">
+            <el-input v-model="searchForm.readName" placeholder="请输入姓名" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+            <el-form-item>
+                <el-select v-model="searchForm.sex" placeholder="请输入性别" clearable>
+                    <el-option key="1" label="男" value="男"></el-option>
+                    <el-option key="2" label="女" value="女"></el-option>
                 </el-select>
-                <el-input v-model="empForm.name" placeholder="用户名" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-            </div>
-            <el-table
-                :data="empList"
-                border
-                class="table"
-                ref="multipleTable"
-                header-cell-class-name="table-header"
-                @selection-change="handleSelectionChange"
-            >
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="用户名"></el-table-column>
-                <el-table-column label="账户余额">
-                    <template slot-scope="scope">￥{{scope.row.money}}</template>
-                </el-table-column>
-                <el-table-column label="头像(查看大图)" align="center">
-                    <template slot-scope="scope">
-                        <el-image
-                            class="table-td-thumb"
-                            :src="scope.row.thumb"
-                            :preview-src-list="[scope.row.thumb]"
-                        ></el-image>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="address" label="地址"></el-table-column>
-                <el-table-column label="状态" align="center">
-                    <template slot-scope="scope">
-                        <el-tag
-                            :type="scope.row.state==='成功'?'success':(scope.row.state==='失败'?'danger':'')"
-                        >{{scope.row.state}}</el-tag>
-                    </template>
-                </el-table-column>
-
-                <el-table-column prop="date" label="注册时间"></el-table-column>
-                <el-table-column label="操作" width="180" align="center">
-                    <template slot-scope="scope">
-                        <el-button
-                            type="text"
-                            icon="el-icon-edit"
-                            @click="handleEdit(scope.$index, scope.row)"
-                        >编辑</el-button>
-                        <el-button
-                            type="text"
-                            icon="el-icon-delete"
-                            class="red"
-                            @click="handleDelete(scope.$index, scope.row)"
-                        >删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination
-                    background
-                    layout="total, prev, pager, next"
-                    :current-page="empForm.pageIndex"
-                    :page-size="empForm.pageSize"
-                    :total="pageTotal"
-                    @current-change="handlePageChange"
-                ></el-pagination>
-            </div>
-        </div>
-
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="70px">
-                <el-form-item label="用户名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
-        </el-dialog>
-    </div>
+            </el-form-item>
+        </el-col>
+        <el-col :span="5">
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
+            </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <!-- el-table中的height用于固定表头 -->
+    <el-table
+      border
+      height="400"
+      :data="empList"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      @cell-mouse-enter="mouseEnter"
+        >
+      <el-table-column type="selection" align="center" />
+       <el-table-column label="序号" type="index" width="55">
+        <template slot-scope="scope">
+          <!-- (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1  -->
+          <span>{{ (page.currentPage - 1) * page.pageSize + scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户名" prop="number"/>
+      <el-table-column label="头像" prop="headImg">
+        <template slot-scope="scope">
+          <img v-if="scope.row.headImg" :src="scope.row.headImg" alt="用户头像" width="30" height="30">
+          <img v-else src="../../assets/img/img.jpg" alt="用户头像" width="30" height="30">
+        </template>
+      </el-table-column>
+      <el-table-column label="真实姓名" prop="readName"/>
+      <el-table-column label="职位" prop="position.positionName"/>
+      <el-table-column label="联系电话" prop="telPhone"/>
+      <el-table-column label="性别" prop="sex"/>
+      <el-table-column label="出生日期" prop="birthday"/>
+      <el-table-column label="邮箱" prop="email"/>
+      <el-table-column label="微信" prop="weiXin"/>
+      <el-table-column label="QQ" prop="qq"/>
+      <el-table-column label="操作" prop="operation" width="200">
+            <template slot-scope="scope">
+                <el-button
+                    type="text"
+                    icon="el-icon-edit"
+                    @click="handleEdit(scope.$index, scope.row)"
+                >编辑</el-button>
+                <el-button
+                    type="text"
+                    icon="el-icon-delete"
+                    class="red"
+                    @click="handleDelete(scope.$index, scope.row)"
+                >删除</el-button>
+            </template>
+      </el-table-column>
+    </el-table>
+    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addemp(item)"/>
+    <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
+  </div>
 </template>
 
 <script>
-import { fetchData } from '../../api/index';
+import AddDialog from './addEmp'
+import axios from 'axios'
+import { getempList } from '@/api/employee';
+import PageComponent from '@/components/Pagenation/index'
 export default {
-    name: 'basetable',
-    data() {
-        return {
-            empForm: {
-                address: '',
-                name: '',
-                pageIndex: 1,
-                pageSize: 10
-            },
-            empList: [],
-            multipleSelection: [],
-            delList: [],
-            editVisible: false,
-            pageTotal: 0,
-            form: {},
-            idx: -1,
-            id: -1
-        };
-    },
-    created() {
-        this.getData();
-    },
-    methods: {
-        // 获取 easy-mock 的模拟数据
-        getData() {
-            fetchData(this.empForm).then(res => {
-                console.log(res);
-                this.empList = res.list;
-                this.pageTotal = res.pageTotal || 50;
-            });
-        },
-        // 触发搜索按钮
-        handleSearch() {
-            this.$set(this.empForm, 'pageIndex', 1);
-            this.getData();
-        },
-        // 删除操作
-        handleDelete(index, row) {
-            // 二次确认删除
-            this.$confirm('确定要删除吗？', '提示', {
-                type: 'warning'
-            })
-                .then(() => {
-                    this.$message.success('删除成功');
-                    this.empList.splice(index, 1);
-                })
-                .catch(() => {});
-        },
-        // 多选操作
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
-        delAllSelection() {
-            const length = this.multipleSelection.length;
-            let str = '';
-            this.delList = this.delList.concat(this.multipleSelection);
-            for (let i = 0; i < length; i++) {
-                str += this.multipleSelection[i].name + ' ';
-            }
-            this.$message.error(`删除了${str}`);
-            this.multipleSelection = [];
-        },
-        // 编辑操作
-        handleEdit(index, row) {
-            this.idx = index;
-            this.form = row;
-            this.editVisible = true;
-        },
-        // 保存编辑
-        saveEdit() {
-            this.editVisible = false;
-            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            this.$set(this.empList, this.idx, this.form);
-        },
-        // 分页导航
-        handlePageChange(val) {
-            this.$set(this.empForm, 'pageIndex', val);
-            this.getData();
-        }
+  components: {
+    PageComponent,
+    AddDialog
+  },
+  data () {
+    return {
+      loading: true,
+      searchForm: {
+        number: '',
+        readName: '',
+        sex: ''
+      },
+      empList: [],
+      empData: {},
+      page: {
+        currentPage: 0, // 当前页，对应接口中的page
+        pageSize: 0, // 每页条数，对应接口中的limit
+        totalSize: 0, // 中条数，对应接口中的res.data.page.totalRows
+        totalPage: 0 // 总页数，对应接口中的res.data.page.totalPages
+      }
     }
-};
+  },
+  mounted () {
+    this.getempList(null);
+  },
+  methods: {
+    handlePageChange(item) {
+      // console.log(item);// currentPage=1  pageSize=30条
+      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      this.getempList(para);
+    },
+    getempList(param) {
+      getempList(param).then(res => {
+        // this.page.currentPage = res.data.page.page
+        // this.page.pageSize = res.data.page.limit
+        // this.page.totalPage = res.data.page.totalPages
+        // this.page.totalSize = res.data.page.totalRows
+        console.log('返回的数据是',res.data)
+        console.log(res.data.data)
+        if (res.data.code === 3) {
+          this.$message({
+            type: 'error',
+            message: res.data.msg
+          })
+        }
+        this.empList = res.data.data
+        this.loading = false;
+      })
+    },
+    mouseEnter (data) {
+      this.empData = Object.assign({}, data)
+    },
+    addemp (item) {
+      console.log('新增通知', item)
+      axios.get('/json/academic/add?createPerson=' + item.createPerson + '&title=' + item.title + '&content=' + item.content +
+      '&createTime=' + item.createTime + '&fileId=' + item.fileId + '&userIdList=1' + item.userIdList)
+        .then((res) => {
+          if (res.data.msg === '无权限') {
+            this.$router.push({path: '/401'})
+          } else if (res.data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '新增通知成功'
+            })
+            this.getempList()
+          }
+        })
+    },
+    handleDelete () {
+      this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then((res) => {
+        axios.get('/json/academic/delete?empId=' + this.empData.empId).then((res) => {
+          if (res.data.msg === '无权限') {
+            this.$router.push({path: '/401'})
+          } else if (res.data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+            this.getempList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    // handlePageChange (item) {
+    //   axios.get('/HotelManagement/json/employee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
+    //     if (res.data.code === 0) {
+    //       this.page.currentPage = res.data.page.page
+    //       this.page.pageSize = res.data.page.limit
+    //       this.page.totalPage = res.data.page.totalPages
+    //       this.page.totalSize = res.data.page.totalRows
+    //       this.empList = res.data.data
+    //     }
+    //   })
+    // }
+  }
+}
 </script>
 
-<style scoped>
-.handle-box {
-    margin-bottom: 20px;
-}
+<style lang="less">
 
-.handle-select {
-    width: 120px;
-}
-
-.handle-input {
-    width: 300px;
-    display: inline-block;
-}
-.table {
-    width: 100%;
-    font-size: 14px;
-}
-.red {
-    color: #ff0000;
-}
-.mr10 {
-    margin-right: 10px;
-}
-.table-td-thumb {
-    display: block;
-    margin: auto;
-    width: 40px;
-    height: 40px;
-}
 </style>
