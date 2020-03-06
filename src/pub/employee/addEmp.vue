@@ -42,7 +42,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { uploadFile } from '@/api/uploadFile'
 export default {
   props: {
@@ -180,9 +179,13 @@ export default {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  text-align: left;
+  // position: relative;
+  // overflow: hidden;
+  // text-align: left;
+  width: 28%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .avatar-uploader .el-upload:hover {
   border-color: #409eff;

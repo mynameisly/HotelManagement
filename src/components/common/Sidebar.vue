@@ -64,7 +64,17 @@ export default {
                 {
                     icon: 'el-icon-lx-cascades',
                     index: 'employee',
-                    title: '员工管理'
+                    title: '员工信息',
+                    subs: [
+                      {
+                        index: 'employee',
+                        title: '员工管理'
+                      },
+                      {
+                        index: 'position',
+                        title: '职位管理'
+                      }
+                    ]
                 },
                 {
                     icon: 'el-icon-lx-copy',
