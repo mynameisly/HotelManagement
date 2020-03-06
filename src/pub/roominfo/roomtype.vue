@@ -1,20 +1,181 @@
 <template>
-  <div id="checkin">
-    <h1>{{  msg  }}</h1>
+  <div id="roomtype">
+    <el-form v-model="searchForm" :inline="true">
+      <el-row>
+        <el-col :span="6" :offset="1">
+          <el-form-item label="房号：">
+            <el-input v-model="searchForm.number" placeholder="请输入房号" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="客房类型：">
+            <el-input v-model="searchForm.roomType" placeholder="请输入客房类型" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="可住人数：">
+            <el-input v-model="searchForm.peopleNum" placeholder="请输入可住人数" clearable/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6" :offset="1">
+          <el-form-item label="楼层：">
+            <el-input v-model="searchForm.floor" placeholder="请输入楼层" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="床型：">
+            <el-input v-model="searchForm.bedType" placeholder="请输入床型" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+            <el-form-item>
+                <el-select v-model="searchForm.state" placeholder="请输入状态" clearable>
+                    <el-option key="2" label="空闲" value="空闲"></el-option>
+                    <el-option key="2" label="在住" value="在住"></el-option>
+                    <el-option key="1" label="不可用" value="不可用"></el-option>
+                    <el-option key="2" label="正在打扫" value="正在打扫"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="6" :offset="1">
+          <el-form-item label="最低价：">
+            <el-input v-model="searchForm.startPrice" placeholder="请输入最低价" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="最高价：">
+            <el-input v-model="searchForm.endPrice" placeholder="请输入最高价" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" @click="getRoomTypeList(searchForm)">查询</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
+            </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <el-row>
+      <el-col :span="8" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">
+        <el-card :body-style="{ padding: '0px' }" class="cardBox">
+          <div class="imgBox">
+            <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image">
+          </div>
+          <div class="introBox">
+            <span>好吃的汉堡</span>
+            <div class="bottom clearfix">
+              <time class="time">{{ currentDate }}</time>
+              <el-button type="text" class="button">修改</el-button>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addemp(item)"/>
+    <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
 
-
 <script>
+import AddDialog from './addRoomType'
+import axios from 'axios'
+import { getRoomTypeList } from '@/api/roomtype';
+import PageComponent from '@/components/Pagenation/index'
 export default {
+  components: {
+    PageComponent,
+    AddDialog
+  },
   data () {
     return {
-      msg: '客房类型'
+      loading: true,
+      searchForm: {
+        number: '',
+        readName: '',
+        sex: ''
+      },
+      roomTypeList: [],
+      roomTypeData: {},
+      page: {
+        currentPage: 0, // 当前页，对应接口中的page
+        pageSize: 0, // 每页条数，对应接口中的limit
+        totalSize: 0, // 中条数，对应接口中的res.data.page.totalRows
+        totalPage: 0 // 总页数，对应接口中的res.data.page.totalPages
+      }
+    }
+  },
+  mounted () {
+    this.getRoomTypeList(null);
+  },
+  methods: {
+    handlePageChange(item) {
+      // console.log(item);// currentPage=1  pageSize=30条
+      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      this.getRoomTypeList(para);
+    },
+    getRoomTypeList(param) {
+      getRoomTypeList(param).then(res => {
+        // this.page.currentPage = res.data.page.page
+        // this.page.pageSize = res.data.page.limit
+        // this.page.totalPage = res.data.page.totalPages
+        // this.page.totalSize = res.data.page.totalRows
+        console.log('返回的数据是',res.data)
+        console.log(res.data.data)
+        this.loading = false;
+      })
+    },
+    mouseEnter (data) {
+      this.roomTypeData = Object.assign({}, data)
+    },
+    addemp (item) {
+      console.log('新增通知', item)
+      axios.get('/json/academic/add?createPerson=' + item.createPerson + '&title=' + item.title + '&content=' + item.content +
+      '&createTime=' + item.createTime + '&fileId=' + item.fileId + '&userIdList=1' + item.userIdList)
+        .then((res) => {
+          if (res.data.msg === '无权限') {
+            this.$router.push({path: '/401'})
+          } else if (res.data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '新增通知成功'
+            })
+            this.getRoomTypeList()
+          }
+        })
+    },
+    handleDelete () {
+      this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then((res) => {
+        axios.get('/json/academic/delete?empId=' + this.roomTypeData.empId).then((res) => {
+          if (res.data.msg === '无权限') {
+            this.$router.push({path: '/401'})
+          } else if (res.data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+            this.getRoomTypeList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
 </script>
 
 <style lang="less">
-  
+
 </style>

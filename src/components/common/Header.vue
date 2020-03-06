@@ -29,16 +29,17 @@
                 </div>
                 <!-- 用户头像 -->
                 <div class="user-avator">
-                    <img src="../../assets/img/img.jpg" />
+                    <img v-if="headImg!=null&&headImg!=''" :src="headImg" />
+                    <img v-else src="../../assets/img/img.jpg" />
                 </div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
-                        {{username}}
+                        {{number}}
                         <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
+                        <a href="https://github.com/mynameisly/HotelManagement" target="_blank">
                             <el-dropdown-item>项目仓库</el-dropdown-item>
                         </a>
                         <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
@@ -50,69 +51,98 @@
 </template>
 <script>
 import bus from '../common/bus';
+import { mapGetters, mapActions } from "vuex";
+import { logout } from '@/api/login'
 export default {
     data() {
-        return {
-            collapse: false,
-            fullscreen: false,
-            name: 'linxin',
-            message: 2
-        };
+      return {
+        collapse: false,
+        fullscreen: false,
+        number: '',
+        headImg: '',
+        message: 2
+      };
     },
     computed: {
-        username() {
-            let username = localStorage.getItem('ms_username');
-            return username ? username : this.name;
-        }
+      ...mapGetters(["employeeId", "number", "headImg"])
     },
-    methods: {
-        // 用户名下拉菜单选择事件
-        handleCommand(command) {
-            if (command == 'loginout') {
-                localStorage.removeItem('ms_username');
-                this.$router.push('/login');
-            }
-        },
-        // 侧边栏折叠
-        collapseChage() {
-            this.collapse = !this.collapse;
-            bus.$emit('collapse', this.collapse);
-        },
-        // 全屏事件
-        handleFullScreen() {
-            let element = document.documentElement;
-            if (this.fullscreen) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitCancelFullScreen) {
-                    document.webkitCancelFullScreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-            } else {
-                if (element.requestFullscreen) {
-                    element.requestFullscreen();
-                } else if (element.webkitRequestFullScreen) {
-                    element.webkitRequestFullScreen();
-                } else if (element.mozRequestFullScreen) {
-                    element.mozRequestFullScreen();
-                } else if (element.msRequestFullscreen) {
-                    // IE11
-                    element.msRequestFullscreen();
-                }
-            }
-            this.fullscreen = !this.fullscreen;
-        }
+    computed: {
+        // username() {
+        //   let username = localStorage.getItem('ms_username');
+        //   return username ? username : this.name;
+        // }
     },
     mounted() {
-        if (document.body.clientWidth < 1500) {
-            this.collapseChage();
+      // this上还有employeeId
+      console.log(this)
+      this.number = this.$store.getters.number
+      this.headImg = this.$store.getters.headImg
+      this.$store.dispatch('getInfo')
+      if (document.body.clientWidth < 1500) {
+        this.collapseChage();
+      }
+    },
+    methods: {
+      handleCommand(command) { // 用户名下拉菜单选择事件
+        if (command == 'loginout') {
+          // localStorage.removeItem('ms_username');
+          this.$router.push('/login');
+
+
+          // 退出登录接口
+          // logout({ uid: this.userid }).then(res => {
+          //   if (res.code === 200) {
+          //     this.$message({
+          //       message: '已退出登录',
+          //       type: 'warning'
+          //     })
+          //     this.setUserdata("");
+          //     // 退出登录时将sessionStorage里的token和store里面的角色都清零
+          //     removeToken();
+          //     this.resetToken();
+          //     sessionStorage.removeItem("store");
+          //     this.$router.replace("/login");
+          //   }
+          // })
         }
+      },
+      // 侧边栏折叠
+      collapseChage() {
+        this.collapse = !this.collapse;
+        bus.$emit('collapse', this.collapse);
+      },
+      // 全屏事件
+      handleFullScreen() {
+        let element = document.documentElement;
+        if (this.fullscreen) {
+          if (document.exitFullscreen) {
+              document.exitFullscreen();
+          } else if (document.webkitCancelFullScreen) {
+              document.webkitCancelFullScreen();
+          } else if (document.mozCancelFullScreen) {
+              document.mozCancelFullScreen();
+          } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+          }
+        } else {
+          if (element.requestFullscreen) {
+              element.requestFullscreen();
+          } else if (element.webkitRequestFullScreen) {
+              element.webkitRequestFullScreen();
+          } else if (element.mozRequestFullScreen) {
+              element.mozRequestFullScreen();
+          } else if (element.msRequestFullscreen) {
+              // IE11
+              element.msRequestFullscreen();
+          }
+        }
+        this.fullscreen = !this.fullscreen;
+      },
+      ...mapActions("user/", ["setUserdata"])
     }
 };
 </script>
+
 <style scoped>
 .header {
     position: relative;

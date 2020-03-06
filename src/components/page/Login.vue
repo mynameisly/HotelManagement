@@ -28,7 +28,9 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import { login } from '@/api/login'
+import { mapGetters, mapActions } from "vuex";
 export default {
     data: function() {
         return {
@@ -42,24 +44,55 @@ export default {
             },
         };
     },
+    computed: {
+      ...mapGetters([ "number", "headImg"])
+    },
     methods: {
         submitForm(loginForm) {
-            this.$refs.login.validate(valid => {
-                if (valid) {
-                    ///HotelManagement/json/login/direct?number=xiaohei&password=123abc
-                    axios.get('/HotelManagement/json/login/direct?number=' + this.loginForm.number + '&password=' + this.loginForm.password).then((res) => {
-                        console.log('登录', res.data.data)
-                        this.$message.success('登录成功');
-                        localStorage.setItem('ms_username', this.loginForm.number);
-                        this.$router.push('/');
-                    })
-                } else {
-                    this.$message.error('请输入账号和密码');
-                    console.log('error submit!!');
-                    return false;
+          this.$refs.login.validate(valid => {
+            if (valid) {
+              ///HotelManagement/json/login/direct?number=xiaohei&password=123abc
+              // axios.get('/HotelManagement/json/login/direct?number=' + this.loginForm.number + '&password=' + this.loginForm.password).then((res) => {
+              //     console.log('登录', res.data.data)
+              //     this.$message.success('登录成功');
+              //     localStorage.setItem('ms_username', this.loginForm.number);
+              //     this.$router.push('/');
+              // })
+              const para = {
+                number: this.loginForm.number,
+                password: this.loginForm.password
+                // type: this.loginForm.type
+              };
+              login(para).then(res => {
+                if (res.code === 0) {
+                  this.$message({
+                    message: '登录成功',
+                    type: 'success'
+                  });
+                  this.saveUserData(res)
                 }
-            });
+              })
+            } else {
+              this.$message.error('请输入账号和密码');
+              console.log('error submit!!');
+              return false;
+            }
+          });
         },
+        saveUserData (res) {
+          console.log('进入到saveUserData里面，返回数据是',res)
+          const employeeId = res.data.employeeId;
+          const number = res.data.number;
+          const headImg = res.data.headImg;
+          this.setUserdata({ employeeId, number, headImg });
+          this.$router.push({ path:'/'} );
+          // this.$router.replace('/');
+          // const token = res.data[1];
+          // const utype = res.data[0].type;
+          // const roles = res.data[0].roles.map(ele => { return ele.name });
+          // setToken(token);
+        },
+        ...mapActions("user/", ["setUserdata"])
     },
 };
 </script>
