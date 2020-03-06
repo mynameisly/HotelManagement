@@ -47,18 +47,19 @@
       <el-table-column label="用户名" prop="number"/>
       <el-table-column label="头像" prop="headImg">
         <template slot-scope="scope">
-          <img :src="scope.row.headImg" alt="用户头像" width="30" height="30">
+          <img v-if="scope.row.headImg" :src="scope.row.headImg" alt="用户头像" width="30" height="30">
+          <img v-else src="../../assets/img/img.jpg" alt="用户头像" width="30" height="30">
         </template>
       </el-table-column>
       <el-table-column label="真实姓名" prop="readName"/>
-      <el-table-column label="职位" prop="position"/>
-      <el-table-column label="手机号码" prop="telPhone"/>
+      <el-table-column label="职位" prop="position.positionName"/>
+      <el-table-column label="联系电话" prop="telPhone"/>
       <el-table-column label="性别" prop="sex"/>
       <el-table-column label="出生日期" prop="birthday"/>
       <el-table-column label="邮箱" prop="email"/>
       <el-table-column label="微信" prop="weiXin"/>
       <el-table-column label="QQ" prop="qq"/>
-      <el-table-column label="简介" prop="introduce"/>
+      <!-- <el-table-column label="简介" prop="introduce"/> -->
       <el-table-column label="操作" prop="operation" width="100">
             <template slot-scope="scope">
                 <!-- <el-button
@@ -125,6 +126,7 @@ export default {
         // this.page.totalSize = res.data.page.totalRows
         console.log('返回的数据是',res.data)
         console.log(res.data.data)
+        this.empList = res.data.data
         this.loading = false;
       })
     },
