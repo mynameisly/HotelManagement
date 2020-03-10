@@ -60,22 +60,32 @@
       <el-table-column label="微信" prop="weiXin"/>
       <el-table-column label="QQ" prop="qq"/>
       <el-table-column label="操作" prop="operation" width="200">
-            <template slot-scope="scope">
-                <el-button
-                    type="text"
-                    icon="el-icon-edit"
-                    @click="handleEdit(scope.$index, scope.row)"
-                >编辑</el-button>
-                <el-button
-                    type="text"
-                    icon="el-icon-delete"
-                    class="red"
-                    @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button>
-            </template>
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            @click="handleEdit(scope.$index, scope.row)"
+          >编辑</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-s-tools"
+            @click="handleReset"
+          >重置密码</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-setting"
+            @click="handleUpdate"
+          >修改密码</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            class="red"
+            @click="handleDelete(scope.$index, scope.row)"
+          >删除</el-button>
+        </template>
       </el-table-column>
     </el-table>
-    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addemp(item)"/>
+    <add-dialog ref="addDialog" title="新增" @confirmData="(item) => addemp(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
@@ -83,7 +93,7 @@
 <script>
 import AddDialog from './addEmp'
 import axios from 'axios'
-import { getempList } from '@/api/employee';
+import { getempList,resetPassword,updatePassword } from '@/api/employee';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -179,6 +189,32 @@ export default {
         })
       })
     },
+    handleReset() {
+      resetPassword(null).then(res => {
+        if(res.data.code === 0) {
+          this.$message({
+            type: 'success',
+            message: '重置密码成功'
+          })
+        }
+      })
+    },
+    handleUpdate () {
+      const param = {
+        oldPassword: this.searchForm.oldPassword,
+        newPassword: this.searchForm.newPassword
+      }
+      updatePassword(param).then(res => {
+        if(res.data.code === 0) {
+          this.$message({
+            type: 'success',
+            message: '修改密码成功'
+          })
+        } else if(res.data.code === 7) {
+          alert(res.data.data)
+        }
+      })
+    }
     // handlePageChange (item) {
     //   axios.get('/HotelManagement/json/employee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
     //     if (res.data.code === 0) {
