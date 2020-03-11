@@ -79,7 +79,7 @@ export default {
           const number = res.data.number;
           const headImg = res.data.headImg;
           this.setUserdata({ employeeId, number, headImg });
-          this.$router.push({ path:'/'} );
+          this.$router.push({ path:'/dashboard'} );
           // this.$router.replace('/');
           // const token = res.data[1];
           // const utype = res.data[0].type;

@@ -59,13 +59,13 @@
       <el-table-column label="邮箱" prop="email"/>
       <el-table-column label="微信" prop="weiXin"/>
       <el-table-column label="QQ" prop="qq"/>
-      <el-table-column label="操作" prop="operation" width="200">
+      <el-table-column label="操作" prop="operation" width="300">
         <template slot-scope="scope">
           <el-button
             type="text"
             icon="el-icon-edit"
-            @click="handleEdit(scope.$index, scope.row)"
-          >编辑</el-button>
+            @click="$refs.updateDialog.open(empData)"
+          >修改</el-button>
           <el-button
             type="text"
             icon="el-icon-s-tools"
@@ -80,25 +80,27 @@
             type="text"
             icon="el-icon-delete"
             class="red"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <add-dialog ref="addDialog" title="新增" @confirmData="(item) => addemp(item)"/>
+    <edit-dialog ref="addDialog" title="新增" @confirmData="(item) => addemp(item)"/>
+    <update-dialog ref="updateDialog" title="修改" @confirmData="(item) => update(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
 
 <script>
-import AddDialog from './addEmp'
-import axios from 'axios'
-import { getempList,resetPassword,updatePassword } from '@/api/employee';
+import editDialog from './addEmp'
+import updateDialog from './update'
+import { getempList,addemp, update, resetPassword,updatePassword,delemp } from '@/api/employee';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
     PageComponent,
-    AddDialog
+    editDialog,
+    updateDialog
   },
   data () {
     return {
@@ -133,8 +135,8 @@ export default {
         // this.page.pageSize = res.data.page.limit
         // this.page.totalPage = res.data.page.totalPages
         // this.page.totalSize = res.data.page.totalRows
-        console.log('返回的数据是',res.data)
-        console.log(res.data.data)
+        // console.log('返回的数据是',res.data)
+        // console.log(res.data.data)
         if (res.data.code === 3) {
           this.$message({
             type: 'error',
@@ -149,20 +151,46 @@ export default {
       this.empData = Object.assign({}, data)
     },
     addemp (item) {
-      console.log('新增通知', item)
-      axios.get('/json/academic/add?createPerson=' + item.createPerson + '&title=' + item.title + '&content=' + item.content +
-      '&createTime=' + item.createTime + '&fileId=' + item.fileId + '&userIdList=1' + item.userIdList)
-        .then((res) => {
-          if (res.data.msg === '无权限') {
-            this.$router.push({path: '/401'})
-          } else if (res.data.code === 0) {
-            this.$message({
-              type: 'success',
-              message: '新增通知成功'
-            })
-            this.getempList()
-          }
-        })
+      // console.log('新增员工', item)
+      const param = {
+        number: item.number,
+        readName: item.readName,
+        positionId: item.position,
+        telPhone: item.telPhone,
+        sex: item.sex
+      }
+      addemp(param).then(res => {
+        if (res.data.code === 0) {
+          this.$message({
+            type: 'success',
+            message: '新增员工成功'
+          })
+          this.getempList()
+        }
+      })
+    },
+    update (item) {
+      const param = {
+        employeeId: item.employeeId,
+        readName: item.readName,
+        telPhone: item.telPhone,
+        email: item.email,
+        qq: item.qq,
+        weiXin: item.weiXin,
+        sex: item.sex,
+        headImg: item.headImg,
+        birthday: item.birthday,
+        introduce: item.introduce
+      }
+      update(param).then(res =>{
+        if(res.data.code === 0) {
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+        }
+        this.getempList()
+      })
     },
     handleDelete () {
       this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
@@ -171,10 +199,8 @@ export default {
         type: 'warning',
         center: true
       }).then((res) => {
-        axios.get('/json/academic/delete?empId=' + this.empData.empId).then((res) => {
-          if (res.data.msg === '无权限') {
-            this.$router.push({path: '/401'})
-          } else if (res.data.code === 0) {
+        delemp(this.empData.empId).then(res => {
+          if (res.data.code === 0) {
             this.$message({
               type: 'success',
               message: '删除成功'
@@ -185,7 +211,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: '取消删除'
         })
       })
     },
@@ -200,32 +226,8 @@ export default {
       })
     },
     handleUpdate () {
-      const param = {
-        oldPassword: this.searchForm.oldPassword,
-        newPassword: this.searchForm.newPassword
-      }
-      updatePassword(param).then(res => {
-        if(res.data.code === 0) {
-          this.$message({
-            type: 'success',
-            message: '修改密码成功'
-          })
-        } else if(res.data.code === 7) {
-          alert(res.data.data)
-        }
-      })
-    }
-    // handlePageChange (item) {
-    //   axios.get('/HotelManagement/json/employee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
-    //     if (res.data.code === 0) {
-    //       this.page.currentPage = res.data.page.page
-    //       this.page.pageSize = res.data.page.limit
-    //       this.page.totalPage = res.data.page.totalPages
-    //       this.page.totalSize = res.data.page.totalRows
-    //       this.empList = res.data.data
-    //     }
-    //   })
-    // }
+      this.$router.push({path:'/updatePwd'})
+    },
   }
 }
 </script>

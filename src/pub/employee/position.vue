@@ -96,23 +96,23 @@
 //       const para = { currentPage: item.currentPage, pageSize: item.pageSize };
 //       this.getPositionList(para);
 //     },
-//     getPositionList(param) {
-//       getPositionList(param).then(res => {
-//         // this.page.currentPage = res.data.page.page
-//         // this.page.pageSize = res.data.page.limit
-//         // this.page.totalPage = res.data.page.totalPages
-//         // this.page.totalSize = res.data.page.totalRows
-//         console.log('返回的职位信息是',res.data)
-//         if (res.data.code === 3) {
-//           this.$message({
-//             type: 'error',
-//             message: res.data.msg
-//           })
-//         }
-//         this.positionList = res.data.data
-//         this.loading = false;
-//       })
-//     },
+    // getPositionList(param) {
+    //   getPositionList(param).then(res => {
+    //     // this.page.currentPage = res.data.page.page
+    //     // this.page.pageSize = res.data.page.limit
+    //     // this.page.totalPage = res.data.page.totalPages
+    //     // this.page.totalSize = res.data.page.totalRows
+    //     console.log('返回的职位信息是',res.data)
+    //     if (res.data.code === 3) {
+    //       this.$message({
+    //         type: 'error',
+    //         message: res.data.msg
+    //       })
+    //     }
+    //     this.positionList = res.data.data
+    //     this.loading = false;
+    //   })
+    // },
 //     mouseEnter (data) {
 //       this.positionData = Object.assign({}, data)
 //     },

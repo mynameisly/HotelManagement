@@ -8,11 +8,6 @@
         <el-form-item label="姓名:" prop="readName">
           <el-input v-model="item.readName"  palceholder="请输入姓名" clearable/>
         </el-form-item>
-        <!-- <el-form-item label="性别:" prop="sex">
-          <el-input v-model="item.sex"  palceholder="请输入性别" clearable/>
-          <el-radio v-model="item.sex" label="1" border>男</el-radio>
-          <el-radio v-model="item.sex" label="2" border>女</el-radio>
-        </el-form-item> -->
         <el-form-item label="性别:" prop="sex">
           <el-radio-group v-model="item.sex">
            <el-radio v-model="item.sex" label="男" border>男</el-radio>
@@ -20,7 +15,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="职位:" prop="position">
-          <!-- 显示的是职位，传递的是positionId -->
+          <!-- 显示的是职位，传递的是positionId  -->
           <el-select v-model="item.position" placeholder="请选择职位" clearable>
             <el-option
               v-for="i in positionList"
@@ -33,7 +28,7 @@
         <el-form-item label="联系电话:" prop="telPhone">
           <el-input v-model="item.telPhone"  palceholder="请输入联系电话" clearable/>        
         </el-form-item>
-         <el-form-item label="头像" prop="headImg" >
+         <el-form-item label="头像:" prop="headImg" >
           <el-upload
             class="avatar-uploader"
             action=""
@@ -47,6 +42,21 @@
             <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
           </el-upload>
         </el-form-item>
+        <el-form-item label="出生日期:" prop="birthday">
+          <el-input v-model="item.birthday"  palceholder="请输入出生日期" clearable/>    
+        </el-form-item>
+        <el-form-item label="QQ:" prop="qq">
+          <el-input v-model="item.qq"  palceholder="请输入QQ" clearable/>    
+        </el-form-item>
+        <el-form-item label="微信:" prop="weiXin">
+          <el-input v-model="item.weiXin"  palceholder="请输入微信" clearable/>    
+        </el-form-item>
+        <el-form-item label="邮箱:" prop="email">
+          <el-input v-model="item.email"  palceholder="请输入邮箱" clearable/>    
+        </el-form-item>
+        <el-form-item label="简介:" prop="introduce">
+          <el-input type="textarea"  v-model="item.introduce" :rows="4" resize="none" maxlength="200" show-word-limit placeholder="请输入个人简介"></el-input>
+        </el-form-item>
       </el-form>
       <span slot="footer">
       <el-button type="primary" @click="resetForm('empForm')">取消</el-button>
@@ -58,7 +68,8 @@
 
 <script>
 import { uploadFile } from '@/api/uploadFile'
-import { getPositionList } from '@/api/position';
+import { getPositionList,updatePosition } from '@/api/position';
+import { getEmployeeById } from '@/api/employee';
 export default {
   props: {
     title: String,
@@ -81,6 +92,7 @@ export default {
     }
     return {
       visible: false,
+      employeeId: '',
       uptoken: {
         key: ''
       },
@@ -95,14 +107,19 @@ export default {
         sex: '',
         position: '',
         telPhone: '',
-        headImg: ''
+        headImg: '',
+        birthday: '',
+        qq: '',
+        weiXin: '',
+        email: '',
+        introduce: ''
       },
       rules: {
-        number: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-        readName: [{ required: true, message: '请输入姓名', trigger: 'change' }],
-        sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
-        position: [{ required: true, message: '请选择职位', trigger: 'blur' }],
-        telPhone: [{required: true, validator: validateTelPhone, trigger: 'blur'}]
+        // number: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+        // readName: [{ required: true, message: '请输入姓名', trigger: 'change' }],
+        // sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
+        // position: [{ required: true, message: '请选择职位', trigger: 'blur' }],
+        // telPhone: [{required: true, validator: validateTelPhone, trigger: 'blur'}]
       }
     }
   },
@@ -116,7 +133,18 @@ export default {
         this.item = {}
       } else {
         this.item = item
+        // console.log('this item 是，',this.item)
+        this.employeeId = item.employeeId
+        this.getEmployeeById()
       }
+    },
+    getEmployeeById() {
+      getEmployeeById(this.employeeId).then(res => {
+        console.log('该员工的信息是，',res)
+        if(res.data.code === 0) {
+          this.item = res.data.data
+        }
+      })
     },
     formateDate (date) {
       let theDate = new Date(date)
@@ -193,6 +221,7 @@ export default {
             lockScroll: false,
             type: 'warning'
           }).then(() => {
+            console.log('修改的数据是，', this.item)
             this.$emit('confirmData', this.item)
             this.resetForm('empForm')
           })
