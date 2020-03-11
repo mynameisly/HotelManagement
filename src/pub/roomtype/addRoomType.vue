@@ -2,34 +2,48 @@
   <div id="roomtypeAdd">
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="roomtypeForm" :model="item" :rules="rules" label-width="100px">
-        <el-form-item label="房号：">
-          <el-input v-model="item.number" placeholder="请输入房号" clearable/>
+        <el-form-item label="客房类型：" prop="roomTypeName">
+          <el-input v-model="item.roomTypeName" placeholder="请输入客房类型" clearable/>
         </el-form-item>
-        <el-form-item label="客房类型：">
-          <el-input v-model="item.roomType" placeholder="请输入客房类型" clearable/>
-        </el-form-item>
-        <el-form-item label="可住人数：">
+        <el-form-item label="可住人数：" prop="peopleNum">
           <el-input v-model="item.peopleNum" placeholder="请输入可住人数" clearable/>
         </el-form-item>
-        <el-form-item label="楼层：">
+        <el-form-item label="楼层：" prop="floor">
           <el-input v-model="item.floor" placeholder="请输入楼层" clearable/>
         </el-form-item>
-        <el-form-item label="床型：">
-          <el-input v-model="item.bedType" placeholder="请输入床型" clearable/>
+        <el-form-item label="面积：" prop="area">
+          <el-input v-model="item.area" placeholder="请输入面积" clearable/>
         </el-form-item>
-          <el-form-item label="状态：">
-              <el-select v-model="item.state" placeholder="请输入状态" clearable>
-                  <el-option key="2" label="空闲" value="空闲"></el-option>
-                  <el-option key="2" label="在住" value="在住"></el-option>
-                  <el-option key="1" label="不可用" value="不可用"></el-option>
-                  <el-option key="2" label="正在打扫" value="正在打扫"></el-option>
-              </el-select>
+        <el-form-item label="是否有窗:" prop="window">
+          <el-radio-group v-model="item.window">
+            <el-radio v-model="item.window" label="有窗" border>有窗</el-radio>
+            <el-radio v-model="item.window" label="无窗" border>无窗</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="床型：" prop="bedType">
+          <el-select v-model="item.bedType" placeholder="请选择床型" clearable>
+            <el-option
+              v-for="i in bedTypeList"
+              :key="i.categoryId"
+              :label="i.categoryName"
+              :value="i.categoryName">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="床型具体说明：" prop="bedDetail">
+          <el-input type="textarea" :rows="2" v-model="item.bedDetail" resize="none" maxlength="200" show-word-limit palceholder="床型具体说明"></el-input>
+        </el-form-item>
+        <el-form-item label="房间设施说明：" prop="facilities">
+          <el-input type="textarea" :rows="2" v-model="item.facilities" resize="none" maxlength="200" show-word-limit palceholder="房间设施说明"></el-input>
+        </el-form-item>
+          <el-form-item label="是否可加床："  prop="jiaChuang">
+            <el-select v-model="item.jiaChuang" placeholder="是否可加床" clearable>
+              <el-option key="1" label="可加床（1.8米大床，50/天）" value="可加床（1.8米大床，50/天）"></el-option>
+              <el-option key="2" label="不可加床" value="不可加床"></el-option>
+            </el-select>
           </el-form-item>
-        <el-form-item label="最低价：">
-          <el-input v-model="item.startPrice" placeholder="请输入最低价" clearable/>
-        </el-form-item>
-        <el-form-item label="最高价：">
-          <el-input v-model="item.endPrice" placeholder="请输入最高价" clearable/>
+        <el-form-item label="价格：" prop="price">
+          <el-input v-model="item.price" placeholder="请输入价格" clearable/>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -42,6 +56,8 @@
 
 <script>
 import axios from 'axios'
+import { getCategoryList } from '@/api/category'
+import { getRoomTypeById } from '@/api/roomtype'
 export default {
   props: {
     title: String,
@@ -54,36 +70,57 @@ export default {
       fileFlag: false,
       fileUploadPercent: 0,
       fileList: [],
+      bedTypeList: [],// 保存床型
       item: {
-        number: '',
         roomType: '',
         peopleNum: '',
+        area: '',
         floor: '',
         bedType: '',
-        state: '',
-        startPrice: '',
-        endPrice: ''
+        bedDetail: '',
+        window: '',
+        jiaChuang: '',
+        facilities: '',
+        price: ''
       },
       rules: {
-        number: [{ required: true, message: '请输入', trigger: 'blur' }],
-        roomType: [{ required: true, message: '请输入', trigger: 'change' }],
+        roomTypeName: [{ required: true, message: '请输入', trigger: 'change' }],
         peopleNum: [{ required: true, message: '请输入', trigger: 'blur' }],
+        area: [{ required: true, message: '请输入', trigger: 'blur' }],
         floor: [{ required: true, message: '请输入', trigger: 'blur' }],
-        bedType: [{ required: true, message: '请输入', trigger: 'blur' }],
-        state: [{ required: true, message: '请输入', trigger: 'blur' }],
-        startPrice: [{ required: true, message: '请输入', trigger: 'blur' }],
-        endPrice: [{ required: true, message: '请输入', trigger: 'blur' }]
+        bedType: [{ required: true, message: '请选择', trigger: 'change' }],
+        price: [{ required: true, message: '请输入', trigger: 'blur' }]
       }
     }
   },
+  mounted() {
+    this.getCategoryList()
+  },
   methods: {
-    open (item) {
+    open (item) { // item就是roomTypeData
+    console.log('item',item)
       this.visible = true
       if (item === null || item === undefined) {
-        // this.item = null
+        this.item = {}
       } else {
-        this.item = item
+        this.getRoomTypeById(item.roomTypeId)
       }
+    },
+    getCategoryList() {
+      getCategoryList().then(res => {
+        if(res.code === 0){
+          this.bedTypeList = res.data.categoryName
+        }
+      })
+    },
+    getRoomTypeById(id) {
+      console.log('进入到根据ID查询客房类型')
+      getRoomTypeById(id).then(res => {
+        console.log('根据ID查询客房类型返回数据是，', res)
+        if(res.code === 0){
+          this.item = item
+        }
+      })
     },
     formateDate (date) {
       let theDate = new Date(date)
@@ -148,7 +185,6 @@ export default {
       }).catch(() => false)
     },
     submitForm (roomtypeForm) {
-      this.item.createTime = this.formateDate(this.item.createTime)
       this.$refs.roomtypeForm.validate(valid => {
         if (valid) {
           this.$confirm('确认保存吗？', '是否保存', {

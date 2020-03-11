@@ -46,7 +46,7 @@ export default new Router({
               },
               {
                 path: '/roomtype',
-                component: () => import(/* webpackChunkName: "markdown" */ '../pub/roominfo/roomtype'),
+                component: () => import(/* webpackChunkName: "markdown" */ '../pub/roomtype/index'),
                 meta: { title: '客房类型' }
               },
               {
