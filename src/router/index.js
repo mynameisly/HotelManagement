@@ -7,7 +7,7 @@ export default new Router({
     routes: [
         {
           path: '/',
-          redirect: '/dashboard'
+          redirect: '/login'
         },
         {
           path: '/',
@@ -42,7 +42,7 @@ export default new Router({
               {
                 path: '/roomstate',
                 component: () => import(/* webpackChunkName: "form" */ '../pub/roominfo/roomstate'),
-                  meta: { title: '客房状态' }
+                meta: { title: '客房状态' }
               },
               {
                 path: '/roomtype',
@@ -60,6 +60,11 @@ export default new Router({
                 path: '/checkout',
                 component: () => import(/* webpackChunkName: "i18n" */ '../pub/checkout/index'),
                 meta: { title: '退房办理' }
+              },,
+              {
+                path: '/finance',
+                component: () => import(/* webpackChunkName: "donate" */ '../pub/finance/index.vue'),
+                meta: { title: '财务管理' }
               },
               {
                 // 权限页面
@@ -78,9 +83,9 @@ export default new Router({
                 meta: { title: '403' }
               },
               {
-                path: '/finance',
-                component: () => import(/* webpackChunkName: "donate" */ '../pub/finance/index.vue'),
-                meta: { title: '财务管理' }
+                path: '/updatePwd',
+                component: () => import(/* webpackChunkName: "donate" */ '../components/page/updatePwd.vue'),
+                meta: { title: '修改密码' }
               }
           ]
         },

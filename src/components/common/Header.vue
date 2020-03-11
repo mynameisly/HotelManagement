@@ -52,7 +52,7 @@
 <script>
 import bus from '../common/bus';
 import { mapGetters, mapActions } from "vuex";
-import { logout } from '@/api/login'
+import { getLoginEmployee, loginout } from '@/api/login'
 export default {
     data() {
       return {
@@ -63,9 +63,9 @@ export default {
         message: 2
       };
     },
-    computed: {
-      ...mapGetters(["employeeId", "number", "headImg"])
-    },
+    // computed: {
+    //   ...mapGetters(["employeeId", "number", "headImg"])
+    // },
     computed: {
         // username() {
         //   let username = localStorage.getItem('ms_username');
@@ -74,36 +74,43 @@ export default {
     },
     mounted() {
       // this上还有employeeId
-      console.log(this)
-      this.number = this.$store.getters.number
-      this.headImg = this.$store.getters.headImg
-      this.$store.dispatch('getInfo')
+      // console.log(this)
+      // this.number = this.$store.getters.number
+      // this.headImg = this.$store.getters.headImg
+      this.getLoginEmployee();
+      // this.$store.dispatch('getInfo')
       if (document.body.clientWidth < 1500) {
         this.collapseChage();
       }
     },
     methods: {
+      getLoginEmployee(){
+        getLoginEmployee(null).then(res => {
+          // console.log('当前用户登录信息是，', res)
+          if(res.data.code === 0) {
+            this.number = res.data.data.number
+            this.headImg = res.data.data.headImg
+          }
+        })
+      },
       handleCommand(command) { // 用户名下拉菜单选择事件
         if (command == 'loginout') {
           // localStorage.removeItem('ms_username');
-          this.$router.push('/login');
-
-
-          // 退出登录接口
-          // logout({ uid: this.userid }).then(res => {
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '已退出登录',
-          //       type: 'warning'
-          //     })
-          //     this.setUserdata("");
-          //     // 退出登录时将sessionStorage里的token和store里面的角色都清零
-          //     removeToken();
-          //     this.resetToken();
-          //     sessionStorage.removeItem("store");
-          //     this.$router.replace("/login");
-          //   }
-          // })
+          // this.$router.push('/login');
+          loginout(null).then(res => {
+            if (res.data.code === 0) {
+              this.$message({
+                type: 'success',
+                message: '已退出登录',
+              })
+              // this.setUserdata("");
+              // 退出登录时将sessionStorage里的token和store里面的角色都清零
+              // removeToken();
+              // this.resetToken();
+              // sessionStorage.removeItem("store");
+              this.$router.push('/login');
+            }
+          })
         }
       },
       // 侧边栏折叠
@@ -138,7 +145,7 @@ export default {
         }
         this.fullscreen = !this.fullscreen;
       },
-      ...mapActions("user/", ["setUserdata"])
+      // ...mapActions("user/", ["setUserdata"])
     }
 };
 </script>
