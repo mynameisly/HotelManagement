@@ -91,14 +91,15 @@ export default {
                             title: '客房状态'
                         },
                         {
-                            index: 'roomtype',
-                            title: '客房类型'
-                        },
-                        {
                             index: 'upload',
                             title: '文件上传'
                         }
                     ]
+                },
+                {
+                    icon: 'el-icon-lx-emoji',
+                    index: 'roomtype',
+                    title: '客房类型'
                 },
                 {
                     icon: 'el-icon-lx-emoji',

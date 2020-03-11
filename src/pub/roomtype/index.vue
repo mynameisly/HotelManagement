@@ -63,7 +63,7 @@
     <el-row v-for="(room, index) in roomTypeList" :key="index" v-loading="loading">
       <!-- <el-col :span="11" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 1 : 0"> -->
       <el-col :span="12" v-for="o in 2" :key="o">
-        <el-card :body-style="{ padding: '0px' }" shadow="hover" >
+        <el-card :body-style="{ padding: '0px' }" shadow="hover" @cell-mouse-enter="mouseEnter">
           <div class="imgBox">
             <img v-if="room.imgList.length !== 0" :src="room.imgList[0]" class="image" width="280">
             <img v-else src="../../assets/img/280.jpg" width="280">
@@ -95,7 +95,8 @@
             </div>
             <div class="bottom clearfix">
             <!-- <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroomtype(item)"/> -->
-              <el-button type="primary" @click="$refs.updateDialog.open(null)">查看详情</el-button>
+              <el-button type="primary" @click="$refs.updateDialog.open(roomTypeData)">查看详情</el-button>
+              <el-button type="danger" @click="handleDelete">删除</el-button>
             </div>
           </div>
         </el-card>
@@ -111,7 +112,7 @@
 import AddDialog from './addRoomType'
 import updateDialog from './addRoomType'
 import axios from 'axios'
-import { getRoomTypeList } from '@/api/roomtype';
+import { getRoomTypeList,addRoomType,updateRoomType,delRoomType } from '@/api/roomtype';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -153,37 +154,40 @@ export default {
     },
     getRoomTypeList(param) {
       getRoomTypeList(param).then(res => {
-        // this.page.currentPage = res.data.page.page
-        // this.page.pageSize = res.data.page.limit
-        // this.page.totalPage = res.data.page.totalPages
-        // this.page.totalSize = res.data.page.totalRows
         console.log('返回的客房类型数据是',res.data)
         console.log(res.data.data)
         this.roomTypeList = res.data.data
         this.loading = false;
       })
     },
-    mouseEnter (data) {
+    mouseEnter (data) { // 这个数据拿不到
       this.roomTypeData = Object.assign({}, data)
     },
     addroomtype (item) {
       console.log('新增客房类型', item)
-      axios.get('/json/academic/add?createPerson=' + item.createPerson + '&title=' + item.title + '&content=' + item.content +
-      '&createTime=' + item.createTime + '&fileId=' + item.fileId + '&userIdList=1' + item.userIdList)
-        .then((res) => {
-          if (res.data.msg === '无权限') {
-            this.$router.push({path: '/401'})
-          } else if (res.data.code === 0) {
-            this.$message({
-              type: 'success',
-              message: '新增客房类型成功'
-            })
-            this.getRoomTypeList()
-          }
-        })
+      addRoomType(item).then(res => {
+        console.log('新增客房返回数据是', res)
+        if(res.data.code == 0) {
+          this.$message({
+            type: 'success',
+            message: '新增客房类型成功'
+          })
+          this.getRoomTypeList()
+        }
+      })
     },
     updateroomtype () { // 修改客房类型
-
+      console.log('修改客房类型', item)
+      updateRoomType(item).then(res => {
+        console.log('修改客房类型返回数据是', res)
+        if(res.data.code == 0) {
+          this.$message({
+            type: 'success',
+            message: '修改客房类型成功'
+          })
+          this.getRoomTypeList()
+        }
+      })
     },
     handleDelete () {
       this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
@@ -192,10 +196,8 @@ export default {
         type: 'warning',
         center: true
       }).then((res) => {
-        axios.get('/json/academic/delete?empId=' + this.roomTypeData.empId).then((res) => {
-          if (res.data.msg === '无权限') {
-            this.$router.push({path: '/401'})
-          } else if (res.data.code === 0) {
+        delRoomType(this.roomTypeData.roomTypeId).then(res => {
+          if (res.data.code === 0) {
             this.$message({
               type: 'success',
               message: '删除成功'
