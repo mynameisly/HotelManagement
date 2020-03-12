@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 // 查询客房类型列表
-export const getRoomTypeList = params => { return request({ url: '/HotelManagement/json/room/list', method: 'get', params: params }) }
+export const getRoomTypeList = params => { return request({ url: '/HotelManagement/json/roomType/list', method: 'get', params: params }) }
 
 // 新增客房类型列表
 export const addRoomType = params => { return request({ url: '/HotelManagement/json/roomType/add', method: 'post', params: params }) }
