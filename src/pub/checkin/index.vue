@@ -2,29 +2,57 @@
   <div id="employee">
     <el-form v-model="searchForm" :inline="true">
       <el-row>
-        <el-col :span="6" :offset="1">
-          <el-form-item label="账号：">
-            <el-input v-model="searchForm.number" placeholder="请输入账号" clearable/>
+        <el-col :span="6">
+          <el-form-item label="房号：" prop="number">
+            <el-input v-model="searchForm.number" placeholder="请输入房号" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="姓名：">
-            <el-input v-model="searchForm.readName" placeholder="请输入姓名" clearable/>
+          <el-form-item label="客房类型：" prop="roomType">
+            <el-input v-model="searchForm.roomType" placeholder="请输入客房类型" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-            <el-form-item>
-                <el-select v-model="searchForm.sex" placeholder="请输入性别" clearable>
-                    <el-option key="1" label="男" value="男"></el-option>
-                    <el-option key="2" label="女" value="女"></el-option>
-                </el-select>
-            </el-form-item>
+          <el-form-item label="床型：" prop="bedType">
+            <el-input v-model="searchForm.bedType" placeholder="请输入床型" clearable/>
+          </el-form-item>
         </el-col>
-        <el-col :span="5">
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
-                <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
-            </el-form-item>
+        <el-col :span="6">
+          <el-form-item label="状态：" prop="state">
+            <el-select v-model="searchForm.state" placeholder="请选择状态" clearable>
+              <el-option key="1" label="未退房未到期" value="未退房未到期"></el-option>
+              <el-option key="2" label="未退房已到期" value="未退房已到期"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="时间：">
+            <el-date-picker
+              v-model="searchForm.createTimeRange"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="入住时间"
+              end-placeholder="退房时间">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="最低房价：" prop="startMoney">
+            <el-input v-model="searchForm.startMoney" placeholder="请输入最低房价" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="最高房价：" prop="endMoney">
+            <el-input v-model="searchForm.endMoney" placeholder="请输入最高房价" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -32,7 +60,7 @@
     <el-table
       border
       height="400"
-      :data="empList"
+      :data="checkinList"
       v-loading="loading"
       element-loading-text="拼命加载中"
       @cell-mouse-enter="mouseEnter"
@@ -44,62 +72,55 @@
           <span>{{ (page.currentPage - 1) * page.pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户名" prop="number"/>
-      <el-table-column label="头像" prop="headImg">
-        <template slot-scope="scope">
-          <img :src="scope.row.headImg" alt="用户头像" width="30" height="30">
+      <el-table-column label="房号" prop="number"/>
+      <el-table-column label="入住时间" prop="checkinTime"/>
+      <el-table-column label="入住天数" prop="checkinDay"/>
+      <el-table-column label="价格" prop="money"/>
+      <el-table-column label="退房时间" prop="expectCheckoutTime"/>
+      <el-table-column label="操作" prop="operation" width="200">
+        <template>
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            @click="updateRoom(checkinData)"
+          >编辑</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            class="red"
+            @click="handleDelete(checkinData)"
+          >删除</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="真实姓名" prop="readName"/>
-      <el-table-column label="职位" prop="position"/>
-      <el-table-column label="手机号码" prop="telPhone"/>
-      <el-table-column label="性别" prop="sex"/>
-      <el-table-column label="出生日期" prop="birthday"/>
-      <el-table-column label="邮箱" prop="email"/>
-      <el-table-column label="微信" prop="weiXin"/>
-      <el-table-column label="QQ" prop="qq"/>
-      <el-table-column label="简介" prop="introduce"/>
-      <el-table-column label="操作" prop="operation" width="100">
-            <template slot-scope="scope">
-                <!-- <el-button
-                    type="text"
-                    icon="el-icon-edit"
-                    @click="handleEdit(scope.$index, scope.row)"
-                >编辑</el-button> -->
-                <el-button
-                    type="text"
-                    icon="el-icon-delete"
-                    class="red"
-                    @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button>
-            </template>
-      </el-table-column>
     </el-table>
-    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addemp(item)"/>
+    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addcheckin(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
 
 <script>
-// import AddDialog from './add'
-import axios from 'axios'
-import { getempList } from '@/api/employee';
+import AddDialog from './addCheckin'
+import { getCheckinList,addCheckin,updateCheckin,updateRoom } from '@/api/checkin';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
     PageComponent,
-    // AddDialog
+    AddDialog
   },
   data () {
     return {
       loading: true,
       searchForm: {
         number: '',
-        readName: '',
-        sex: ''
+        roomType: '',
+        bedType: '',
+        state: '',
+        createTimeRange: '',
+        startMoney: '',
+        endMoney: ''
       },
-      empList: [],
-      empData: {},
+      checkinList: [],
+      checkinData: {},
       page: {
         currentPage: 0, // 当前页，对应接口中的page
         pageSize: 0, // 每页条数，对应接口中的limit
@@ -109,65 +130,55 @@ export default {
     }
   },
   mounted () {
-    // this.getempList(null);
-    this.getEmp()
+    this.getCheckinList(null);
   },
   methods: {
-    getEmp () {
-      axios.get('/HotelManagement/json/checkin/list').then((res) =>{
-        console.log(2222222, res.data)
-      })
-    },
+    // getcheckin () {
+    //   axios.get('/HotelManagement/json/checkin/list').then((res) =>{
+    //     console.log(2222222, res.data)
+    //   })
+    // },
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
       const para = { currentPage: item.currentPage, pageSize: item.pageSize };
-      this.getempList(para);
+      this.getCheckinList(para);
     },
-    getempList(param) {
-      getempList(param).then(res => {
-        // this.page.currentPage = res.data.page.page
-        // this.page.pageSize = res.data.page.limit
-        // this.page.totalPage = res.data.page.totalPages
-        // this.page.totalSize = res.data.page.totalRows
+    getCheckinList(param) {
+      getCheckinList(param).then(res => {
         console.log('返回的数据是',res.data)
-        console.log(res.data.data)
+        this.checkinList = res.data.data
         this.loading = false;
       })
     },
-    // getempList () { // 根据多个筛选条件查询,需管理员权限; 筛选条件为空时，默认查询所有数据
-    //   // axios.get('/json/academic/find?limit=&title=' + this.searchForm.title).then((res) => {
-    //     ///HotelManagement/json/employee/list
-    //   axios.get('/HotelManagement/json/employee/list?page=&limit=&number' + this.searchForm.number
-    //   + '&readName=' + this.searchForm.readName + '&sex=' + this.searchForm.sex)
-    //   .then((res) => {
-
-    //     this.page.currentPage = res.data.page.page
-    //     this.page.pageSize = res.data.page.limit
-    //     this.page.totalPage = res.data.page.totalPages
-    //     this.page.totalSize = res.data.page.totalRows
-    //     // this.empList = res.data.data
-    //     console.log(res.data.data)
-    //     this.loading = false
-    //   })
-    // },
     mouseEnter (data) {
-      this.empData = Object.assign({}, data)
+      this.checkinData = Object.assign({}, data)
     },
-    addemp (item) {
+    addcheckin (item) {
       console.log('新增通知', item)
-      axios.get('/json/academic/add?createPerson=' + item.createPerson + '&title=' + item.title + '&content=' + item.content +
-      '&createTime=' + item.createTime + '&fileId=' + item.fileId + '&userIdList=1' + item.userIdList)
-        .then((res) => {
-          if (res.data.msg === '无权限') {
-            this.$router.push({path: '/401'})
-          } else if (res.data.code === 0) {
-            this.$message({
-              type: 'success',
-              message: '新增通知成功'
-            })
-            this.getempList()
-          }
-        })
+      const param = {
+        "checkinDay": item.checkinDay,
+        "errorInfo": {},
+        "roomId": item.roomId,
+        "tenants": [{
+          "tenantIdCard": item.tenantIdCard,
+          "tenantName": item.tenantName,
+          "tenantSex": item.tenantSex,
+          "tenantTel": item.tenantTel
+        }]
+      }
+      console.log('param', param)
+      const headers = { 'content-type': 'application/json;charset=utf-8'}
+      // console.log('param', JSON.stringify(param))
+      addCheckin(JSON.stringify(param),headers).then(res => {
+        console.log('新增入住',res)
+        if (res.data.code === 0) {
+          this.$message({
+            type: 'success',
+            message: '新增入住成功'
+          })
+          this.getCheckinList()
+        }
+      })
     },
     handleDelete () {
       this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
@@ -176,17 +187,17 @@ export default {
         type: 'warning',
         center: true
       }).then((res) => {
-        axios.get('/json/academic/delete?empId=' + this.empData.empId).then((res) => {
-          if (res.data.msg === '无权限') {
-            this.$router.push({path: '/401'})
-          } else if (res.data.code === 0) {
-            this.$message({
-              type: 'success',
-              message: '删除成功'
-            })
-            this.getempList()
-          }
-        })
+        // axios.get('/json/academic/delete?checkinId=' + this.checkinData.checkinId).then((res) => {
+        //   if (res.data.msg === '无权限') {
+        //     this.$router.push({path: '/401'})
+        //   } else if (res.data.code === 0) {
+        //     this.$message({
+        //       type: 'success',
+        //       message: '删除成功'
+        //     })
+        //     this.getCheckinList()
+        //   }
+        // })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -195,13 +206,13 @@ export default {
       })
     },
     // handlePageChange (item) {
-    //   axios.get('/HotelManagement/json/employee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
+    //   axios.get('/HotelManagement/json/checkinloyee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
     //     if (res.data.code === 0) {
     //       this.page.currentPage = res.data.page.page
     //       this.page.pageSize = res.data.page.limit
     //       this.page.totalPage = res.data.page.totalPages
     //       this.page.totalSize = res.data.page.totalRows
-    //       this.empList = res.data.data
+    //       this.checkinList = res.data.data
     //     }
     //   })
     // }
