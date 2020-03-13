@@ -1,0 +1,129 @@
+<template>
+  <div id="checkinAdd">
+    <el-dialog :title="title" :visible.sync="visible" top="8rem" width="80%" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
+      <el-form :model="item" :rules="rules" label-width="100px">
+        <el-row>
+            <el-col :span="6">
+                <el-form-item label="房号:">
+                    <el-input v-model="item.number" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="6">
+                <el-form-item label="房型:">
+                    <el-input v-model="item.roomType" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="6">
+                <el-form-item label="面积:">
+                    <el-input v-model="item.area" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="6">
+                <el-form-item label="人数:">
+                    <el-input v-model="item.peopleNum" disabled/>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="6">
+                <el-form-item label="楼层:">
+                    <el-input v-model="item.floor" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="6">
+                <el-form-item label="单价:">
+                    <el-input v-model="item.price" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="6">
+                <el-form-item label="床型:">
+                    <el-input v-model="item.bedType" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="6">
+                <el-form-item label="是否加床:">
+                    <el-input v-model="item.jiaChuang" disabled/>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="6">
+                <el-form-item label="是否有窗:">
+                    <el-input v-model="item.window" disabled/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="18">
+                <el-form-item label="床型描述:">
+                    <el-input v-model="item.bedType" disabled/>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="24">
+                <el-form-item label="房间设施:">
+                    <el-input type="textarea" v-model="item.facilities" disabled/>
+                </el-form-item>
+            </el-col>
+        </el-row>
+
+      </el-form>
+      <span slot="footer">
+        <el-button type="primary" @click="cancel">取消</el-button>
+      </span>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { addCheckout } from '@/api/checkout';
+export default {
+  props: {
+    title: String,
+    default: 'title'
+  },
+  data () {
+    return {
+      visible: false,
+      item: {}
+    }
+  },
+  mounted () {
+      
+  },
+  methods: {
+    open (item) {
+      this.visible = true
+      if (item === null || item === undefined) {
+        this.item = {}
+      } else {
+        this.item = item
+        this.getCheckoutById(item.checkoutId);
+      }
+    },
+    getCheckoutById(checkoutId) {
+      getCheckoutById(checkoutId).then(res => {
+        console.log('根据id查询入住信息',res.data)
+        if (res.data.code == 0){
+          this.item = res.data.data.room
+        }
+      })
+    },
+    handleRoom (data) {
+      const uploadArr = data
+      let upload
+      for (var k in uploadArr) {
+        upload = uploadArr[k]
+        upload.number = upload.number // 房号
+      }
+      return uploadArr
+    },
+    cancel () {
+      this.visible = false
+    }
+  }
+}
+</script>
+
+<style lang="less">
+
+</style>

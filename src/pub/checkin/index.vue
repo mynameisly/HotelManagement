@@ -59,7 +59,7 @@
     <!-- el-table中的height用于固定表头 -->
     <el-table
       border
-      height="400"
+      height="370"
       :data="checkinList"
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -72,7 +72,7 @@
           <span>{{ (page.currentPage - 1) * page.pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="房号" prop="number"/>
+      <el-table-column label="房号" prop="room.number"/>
       <el-table-column label="入住时间" prop="checkinTime"/>
       <el-table-column label="入住天数" prop="checkinDay"/>
       <el-table-column label="价格" prop="money"/>
@@ -82,30 +82,52 @@
           <el-button
             type="text"
             icon="el-icon-edit"
-            @click="updateRoom(checkinData)"
-          >编辑</el-button>
+            @click="$refs.updateDetails.open(checkinData)"
+          >查看详情</el-button>
           <el-button
             type="text"
-            icon="el-icon-delete"
+            icon="el-icon-edit"
             class="red"
-            @click="handleDelete(checkinData)"
-          >删除</el-button>
+            @click="$refs.updateRoom.open(checkinData)"
+          >换房</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            class="red"
+            @click="$refs.updateDialog.open(checkinData)"
+          >修改</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            class="red"
+            @click="checkout(checkinData)"
+          >退房</el-button>
         </template>
       </el-table-column>
     </el-table>
     <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addcheckin(item)"/>
+    <update-details ref="updateDetails" title="入住详情"/>
+    <update-dialog ref="updateDialog" title="修改入住天数" @confirmData="(item) => updateCheckin(item)"/>
+    <update-room ref="updateRoom" title="换房" @confirmData="(item) => updateRoom(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
 
 <script>
 import AddDialog from './addCheckin'
+import UpdateDetails from './details'
+import UpdateDialog from './updateDialog'
+import UpdateRoom from './updateroom'
 import { getCheckinList,addCheckin,updateCheckin,updateRoom } from '@/api/checkin';
+import { addCheckout } from '@/api/checkout';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
     PageComponent,
-    AddDialog
+    AddDialog,
+    UpdateDetails,
+    UpdateDialog,
+    UpdateRoom
   },
   data () {
     return {
@@ -133,11 +155,6 @@ export default {
     this.getCheckinList(null);
   },
   methods: {
-    // getcheckin () {
-    //   axios.get('/HotelManagement/json/checkin/list').then((res) =>{
-    //     console.log(2222222, res.data)
-    //   })
-    // },
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
       const para = { currentPage: item.currentPage, pageSize: item.pageSize };
@@ -180,42 +197,56 @@ export default {
         }
       })
     },
-    handleDelete () {
-      this.$confirm('此操作将永久删除该数据，是否继续？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true
-      }).then((res) => {
-        // axios.get('/json/academic/delete?checkinId=' + this.checkinData.checkinId).then((res) => {
-        //   if (res.data.msg === '无权限') {
-        //     this.$router.push({path: '/401'})
-        //   } else if (res.data.code === 0) {
-        //     this.$message({
-        //       type: 'success',
-        //       message: '删除成功'
-        //     })
-        //     this.getCheckinList()
-        //   }
-        // })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
+    updateCheckin(item) {
+      const param = {
+        checkinId: item.checkinId,
+        checkinDay: item.checkinDay
+      }
+      console.log('修改入住天数的参数是',param)
+      updateCheckin(param).then(res => {
+        console.log('修改入住天数的参数是',res.data)
+        if(res.data.code == 0){
+          this.$message({
+            type: 'success',
+            message: '修改入住天数成功'
+          })
+        }
+        this.getCheckinList()
       })
     },
-    // handlePageChange (item) {
-    //   axios.get('/HotelManagement/json/checkinloyee/list?page=' + item.currentPage + '&limit=' + item.pageSize + '&title=' + this.searchForm.title).then((res) => {
-    //     if (res.data.code === 0) {
-    //       this.page.currentPage = res.data.page.page
-    //       this.page.pageSize = res.data.page.limit
-    //       this.page.totalPage = res.data.page.totalPages
-    //       this.page.totalSize = res.data.page.totalRows
-    //       this.checkinList = res.data.data
-    //     }
-    //   })
-    // }
+    updateRoom(item) {
+      const param = {
+        checkinId: item.checkinId,
+        roomId: item.roomId
+      }
+      console.log('换房的参数是',param)
+      updateRoom(param).then(res => {
+        console.log('换房的返回的数据是',res.data)
+        if(res.data.code == 0){
+          this.$message({
+            type: 'success',
+            message: '换房成功'
+          })
+        }
+        this.getCheckinList()
+      })
+    },
+    checkout(checkinData){ // money怎末搞
+      const param = {
+        checkinId: checkinData.checkinId,
+        money: 100
+      }
+      addCheckout(param).then(res => {
+        console.log('换房的返回的数据是',res.data)
+        if(res.data.code == 0){
+          this.$message({
+            type: 'success',
+            message: '换房成功'
+          })
+        }
+        this.getCheckinList()
+      })
+    }
   }
 }
 </script>

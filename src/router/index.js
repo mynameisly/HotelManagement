@@ -40,8 +40,8 @@ export default new Router({
                 meta: { title: '客房服务' }
               },
               {
-                path: '/roomstate',
-                component: () => import(/* webpackChunkName: "form" */ '../pub/roominfo/roomstate'),
+                path: '/room',
+                component: () => import(/* webpackChunkName: "form" */ '../pub/roominfo/room'),
                 meta: { title: '客房状态' }
               },
               {

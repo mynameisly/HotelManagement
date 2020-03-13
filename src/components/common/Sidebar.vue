@@ -87,7 +87,7 @@ export default {
                     title: '客房信息',
                     subs: [
                         {
-                            index: 'roomstate',
+                            index: 'room',
                             title: '客房状态'
                         },
                         {
