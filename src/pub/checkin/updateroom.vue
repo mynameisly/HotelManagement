@@ -1,10 +1,7 @@
 <template>
-  <div id="checkinAdd">
+  <div id="updateAdd">
     <el-dialog :title="title" :visible.sync="visible" top="8rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form ref="checkinForm" :model="item" :rules="rules" label-width="100px">
-        <el-form-item label="姓名:" prop="tenantName">
-          <el-input v-model="item.tenantName"  palceholder="请输入姓名" clearable/>
-        </el-form-item>
+      <el-form ref="updateForm" :model="item" :rules="rules" label-width="100px">
         <el-form-item label="房号:" prop="roomId">
           <el-select v-model="item.roomId" placeholder="请选择房号" @focus='handleNoRepeat' clearable>
             <el-option
@@ -15,25 +12,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="身份证:" prop="tenantIdCard">
-          <el-input v-model="item.tenantIdCard"  palceholder="请输入房客身份证" clearable/>
-        </el-form-item>
-        <el-form-item label="联系电话:" prop="tenantTel">
-          <el-input v-model="item.tenantTel"  palceholder="请输入联系电话" clearable/>
-        </el-form-item>
-        <el-form-item label="性别:" prop="tenantSex">
-          <el-radio-group v-model="item.tenantSex">
-           <el-radio v-model="item.tenantSex" label="男" border>男</el-radio>
-          <el-radio v-model="item.tenantSex" label="女" border>女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="入住天数:" prop="checkinDay">
-          <el-input v-model="item.checkinDay"  palceholder="请输入入住天数" clearable/>
-        </el-form-item>
       </el-form>
       <span slot="footer">
-      <el-button type="primary" @click="resetForm('checkinForm')">取消</el-button>
-      <el-button type="primary" @click="submitForm('checkinForm')">提交</el-button>
+      <el-button type="primary" @click="resetForm('updateForm')">取消</el-button>
+      <el-button type="primary" @click="submitForm('updateForm')">提交</el-button>
     </span>
     </el-dialog>
   </div>
@@ -52,20 +34,10 @@ export default {
       firstRoomList: [],
       roomList: [],// 保存房号和roomId
       item: {
-        checkinDay: '',
-        roomId: '',
-        tenantName: '',
-        tenantTel: '',
-        tenantIdCard: '',
-        tenantSex: ''
+        roomId: ''
       },
       rules: {
-        checkinDay: [{ required: true, message: '请输入', trigger: 'blur' }],
-        roomId: [{ required: true, message: '请选择房号', trigger: 'change' }],
-        tenantName: [{ required: true, message: '请输入', trigger: 'blur' }],
-        tenantTel: [{ required: true, message: '请输入', trigger: 'blur' }],
-        tenantIdCard: [{ required: true, message: '请输入', trigger: 'blur' }],
-        tenantSex: [{ required: true, message: '请选择', trigger: 'change' }],
+        roomId: [{ required: true, message: '请选择房号', trigger: 'change' }]
       }
     }
   },
@@ -113,8 +85,8 @@ export default {
       this.roomList = roomList
       console.log('this.rooLisst', this.roomList)
     },
-    submitForm (checkinForm) {
-      this.$refs.checkinForm.validate(valid => {
+    submitForm (updateForm) {
+      this.$refs.updateForm.validate(valid => {
         if (valid) {
           this.$confirm('确认保存吗？', '是否保存', {
             cancelButtonText: '取消',
@@ -123,14 +95,14 @@ export default {
             type: 'warning'
           }).then(() => {
             this.$emit('confirmData', this.item)
-            this.resetForm('checkinForm')
+            this.resetForm('updateForm')
           })
         }
       })
     },
-    resetForm (checkinForm) {
+    resetForm (updateForm) {
       this.$nextTick(() => {
-        this.$refs.checkinForm.clearValidate()
+        this.$refs.updateForm.clearValidate()
       })
       this.item = {}
       this.visible = false
