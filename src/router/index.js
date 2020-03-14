@@ -12,7 +12,7 @@ export default new Router({
         {
           path: '/',
           component: () => import(/* webpackChunkName: "home" */ '../components/common/Home.vue'),
-          meta: { title: '自述文件' },
+          meta: { title: 'Home' },
           children: [
               {
                 path: '/dashboard',
@@ -30,30 +30,25 @@ export default new Router({
                 meta: { title: '员工管理' }
               },
               {
-                path: '/position',
-                component: () => import(/* webpackChunkName: "table" */ '../pub/employee/position'),
-                meta: { title: '职位管理' }
-              },
-              {
                 path: '/roomservice',
                 component: () => import(/* webpackChunkName: "tabs" */ '../pub/roomservice/index'),
-                meta: { title: '客房服务' }
+                meta: { title: '客户服务' }
               },
               {
                 path: '/room',
-                component: () => import(/* webpackChunkName: "form" */ '../pub/roominfo/room'),
-                meta: { title: '客房状态' }
+                component: () => import(/* webpackChunkName: "form" */ '../pub/room/index'),
+                meta: { title: '客房管理' }
               },
               {
-                path: '/roomtype',
-                component: () => import(/* webpackChunkName: "markdown" */ '../pub/roomtype/index'),
-                meta: { title: '客房类型' }
+                path: '/searchroom',
+                component: () => import(/* webpackChunkName: "form" */ '../pub/searchroom/index'),
+                meta: { title: '客房查询' }
               },
               {
                 // 图片上传组件
-                path: '/upload',
-                component: () => import(/* webpackChunkName: "upload" */ '../components/page/Upload.vue'),
-                meta: { title: '文件上传' }
+                path: '/cropper',
+                component: () => import(/* webpackChunkName: "upload" */ '../components/page/Cropper.vue'),
+                meta: { title: '文件上传(可裁剪)' }
               },
               {
                 // 退房办理组件
@@ -66,12 +61,12 @@ export default new Router({
                 component: () => import(/* webpackChunkName: "donate" */ '../pub/finance/index.vue'),
                 meta: { title: '财务管理' }
               },
-              {
-                // 权限页面
-                path: '/permission',
-                component: () => import(/* webpackChunkName: "permission" */ '../components/page/Permission.vue'),
-                meta: { title: '权限测试', permission: true }
-              },
+              // {
+              //   // 权限页面
+              //   path: '/permission',
+              //   component: () => import(/* webpackChunkName: "permission" */ '../components/page/Permission.vue'),
+              //   meta: { title: '权限测试', permission: true }
+              // },
               {
                 path: '/404',
                 component: () => import(/* webpackChunkName: "404" */ '../components/page/404.vue'),

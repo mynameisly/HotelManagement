@@ -39,10 +39,13 @@
         </el-col>
         <el-col :span="4">
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getServiceList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="getServiceHistoryList(searchForm)">查询</el-button>
             <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
+        <el-button type="primary" icon="el-icon-search" @click="$refs.currentService.open(categoryList)">正在进行</el-button>
       </el-row>
     </el-form>
     <!-- el-table中的height用于固定表头 -->
@@ -83,6 +86,7 @@
     </el-table>
     <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addservice(item)"/>
     <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateservice(item)"/>
+    <current-service ref="currentService" title="正在进行的服务"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
@@ -90,7 +94,8 @@
 <script>
 import AddDialog from './addService'
 import updateDialog from './addService'
-import { getServiceList,getServiceHistoryList,addService,finishService,updateService,delService } from '@/api/service';
+import currentService from './currentService'
+import { getServiceHistoryList,addService,updateService,delService } from '@/api/service';
 import { getempList } from '@/api/employee';
 import { getCategoryList } from '@/api/category';
 import PageComponent from '@/components/Pagenation/index'
@@ -98,7 +103,8 @@ export default {
   components: {
     PageComponent,
     AddDialog,
-    updateDialog
+    updateDialog,
+    currentService
   },
   data () {
     return {
@@ -140,7 +146,7 @@ export default {
       return empList
     },
     getCategoryList() {
-      getCategoryList(null).then(res => {
+      getCategoryList({type: '客户服务'}).then(res => {
         this.categoryList = this.handleCategory(res.data.data)
       })
     },

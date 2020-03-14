@@ -1,9 +1,22 @@
 <template>
-  <div id="roomtypeAdd">
+  <div id="roomAdd">
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form ref="roomtypeForm" :model="item" :rules="rules" label-width="100px">
-        <el-form-item label="客房类型：" prop="roomTypeName">
-          <el-input v-model="item.roomTypeName" placeholder="请输入客房类型" clearable/>
+      <el-form ref="roomForm" :model="item" :rules="rules" label-width="100px">
+        <el-form-item label="房号：" prop="number">
+          <el-input v-model="item.number" placeholder="请输入房号" clearable/>
+        </el-form-item>
+        <el-form-item>
+          <el-select v-model="item.roomType" placeholder="请选择客房类型" clearable>
+            <el-option
+              v-for="item in roomTypeList"
+              :key="item.roomTypeId"
+              :label="item.roomTypeName"
+              :value="item.roomTypeName">
+            </el-option>
+          </el-select> 
+        </el-form-item>
+        <el-form-item label="面积：" prop="area">
+          <el-input v-model="item.area" placeholder="请输入面积" clearable/>
         </el-form-item>
         <el-form-item label="可住人数：" prop="peopleNum">
           <el-input v-model="item.peopleNum" placeholder="请输入可住人数" clearable/>
@@ -11,8 +24,8 @@
         <el-form-item label="楼层：" prop="floor">
           <el-input v-model="item.floor" placeholder="请输入楼层" clearable/>
         </el-form-item>
-        <el-form-item label="面积：" prop="area">
-          <el-input v-model="item.area" placeholder="请输入面积" clearable/>
+        <el-form-item label="价格：" prop="price">
+          <el-input v-model="item.price" placeholder="请输入价格" clearable/>
         </el-form-item>
         <el-form-item label="是否有窗:" prop="window">
           <el-radio-group v-model="item.window">
@@ -33,22 +46,33 @@
         <el-form-item label="床型具体说明：" prop="bedDetail">
           <el-input type="textarea" :rows="2" v-model="item.bedDetail" resize="none" maxlength="200" show-word-limit palceholder="床型具体说明"></el-input>
         </el-form-item>
-        <el-form-item label="房间设施说明：" prop="facilities">
-          <el-input type="textarea" :rows="2" v-model="item.facilities" resize="none" maxlength="200" show-word-limit palceholder="房间设施说明"></el-input>
-        </el-form-item>
           <el-form-item label="是否可加床："  prop="jiaChuang">
             <el-select v-model="item.jiaChuang" placeholder="是否可加床" clearable>
               <el-option key="1" label="可加床（1.8米大床，50/天）" value="可加床（1.8米大床，50/天）"></el-option>
               <el-option key="2" label="不可加床" value="不可加床"></el-option>
             </el-select>
           </el-form-item>
-        <el-form-item label="价格：" prop="price">
-          <el-input v-model="item.price" placeholder="请输入价格" clearable/>
+        <el-form-item label="房间设施说明：" prop="facilities">
+          <el-input type="textarea" :rows="2" v-model="item.facilities" resize="none" maxlength="200" show-word-limit palceholder="房间设施说明"></el-input>
+        </el-form-item>
+        <el-form-item label="图片" prop="imgUrls" >
+          <el-upload
+            class="avatar-uploader"
+            action=""
+            :data="uptoken"
+            :show-file-list="false"
+            :on-change="onchange"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="item.imgUrls" :src="item.imgUrls" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer">
-      <el-button type="warning" @click="resetForm('roomtypeForm')">取消</el-button>
-      <el-button type="success" @click="submitForm('roomtypeForm')">提交</el-button>
+      <el-button type="warning" @click="resetForm('roomForm')">取消</el-button>
+      <el-button type="success" @click="submitForm('roomForm')">提交</el-button>
     </span>
     </el-dialog>
   </div>
@@ -57,7 +81,8 @@
 <script>
 import axios from 'axios'
 import { getCategoryList } from '@/api/category'
-import { getRoomTypeById } from '@/api/roomtype'
+import { getAllRoomTypeList } from '@/api/roomtype'
+import { getroomById } from '@/api/room'
 export default {
   props: {
     title: String,
@@ -66,14 +91,13 @@ export default {
   data () {
     return {
       visible: false,
-      param: '', // 表单要提交的参数
-      fileFlag: false,
-      fileUploadPercent: 0,
-      fileList: [],
+      roomTypeList: [], // 客房类型
       bedTypeList: [],// 保存床型
       item: {
-        roomType: '',
+        number: '',
         peopleNum: '',
+        roomType: '',
+        imgUrls: '',
         area: '',
         floor: '',
         bedType: '',
@@ -84,7 +108,8 @@ export default {
         price: ''
       },
       rules: {
-        roomTypeName: [{ required: true, message: '请输入', trigger: 'change' }],
+        number: [{ required: true, message: '请输入', trigger: 'blur' }],
+        roomType: [{ required: true, message: '请输入', trigger: 'change' }],
         peopleNum: [{ required: true, message: '请输入', trigger: 'blur' }],
         area: [{ required: true, message: '请输入', trigger: 'blur' }],
         floor: [{ required: true, message: '请输入', trigger: 'blur' }],
@@ -95,16 +120,24 @@ export default {
   },
   mounted() {
     this.getCategoryList()
+    this.getAllRoomTypeList()
   },
   methods: {
-    open (item) { // item就是roomTypeData
+    open (item) { // item就是roomData
     console.log('item',item)
       this.visible = true
       if (item === null || item === undefined) {
         this.item = {}
       } else {
-        this.getRoomTypeById(item.roomTypeId)
+        this.getroomById(item.roomId)
       }
+    },
+    getAllRoomTypeList() {
+      getAllRoomTypeList().then(res => {
+        if(res.code === 0){
+          this.roomTypeList = res.data.data
+        }
+      })
     },
     getCategoryList() {
       getCategoryList().then(res => {
@@ -113,9 +146,9 @@ export default {
         }
       })
     },
-    getRoomTypeById(id) {
+    getroomById(id) {
       console.log('进入到根据ID查询客房类型')
-      getRoomTypeById(id).then(res => {
+      getroomById(id).then(res => {
         console.log('根据ID查询客房类型返回数据是，', res)
         if(res.code === 0){
           this.item = item
@@ -184,8 +217,8 @@ export default {
         console.log(this.item.fileId)
       }).catch(() => false)
     },
-    submitForm (roomtypeForm) {
-      this.$refs.roomtypeForm.validate(valid => {
+    submitForm (roomForm) {
+      this.$refs.roomForm.validate(valid => {
         if (valid) {
           this.$confirm('确认保存吗？', '是否保存', {
             cancelButtonText: '取消',
@@ -194,14 +227,14 @@ export default {
             type: 'warning'
           }).then(() => {
             this.$emit('confirmData', this.item)
-            this.resetForm('roomtypeForm')
+            this.resetForm('roomForm')
           })
         }
       })
     },
-    resetForm (roomtypeForm) {
+    resetForm (roomForm) {
       this.$nextTick(() => {
-        this.$refs.roomtypeForm.clearValidate()
+        this.$refs.roomForm.clearValidate()
       })
       this.item = {}
       this.fileFlag = false;

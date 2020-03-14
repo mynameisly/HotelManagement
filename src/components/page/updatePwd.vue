@@ -1,5 +1,5 @@
 <template>
-  <div id="updatePwd">
+  <div id="updatePwd" style="background: transparent;border:1px solid gainsboro">
     <el-form :model="searchFrom" :rules="rules" label-width="80px">
       <el-form-item label="原密码">
         <el-input
@@ -17,11 +17,21 @@
       <el-form-item>
         <el-button
           style="width:100%;padding:11px;"
-          type="success"
+          type="primary"
           @click="updatePwd"
         >修 改 密 码</el-button>
       </el-form-item>
     </el-form>
+    <el-row>
+      <el-col :span="14" :offset="4">
+        <router-link to="/dashboard">
+          <el-button type="primary" size="large">返回首页</el-button>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <el-button class="error-btn" type="primary" size="large" @click="goBack">返回上一页</el-button>
+      </el-col>
+    </el-row>
   </div>
 </template>
 

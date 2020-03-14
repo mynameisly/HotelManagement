@@ -40,7 +40,7 @@ export default {
     open (item) {
       this.visible = true
       if (item === null || item === undefined) {
-        // this.item = null
+        this.item = {}
       } else {
         this.item = item
       }
@@ -65,8 +65,6 @@ export default {
         this.$refs.positionForm.clearValidate()
       })
       this.item = {}
-      this.fileFlag = false;
-      this.fileUploadPercent = 0
       this.visible = false
     }
   }

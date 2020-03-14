@@ -69,10 +69,10 @@
           <span>{{ (page.currentPage - 1) * page.pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="住客" prop="tenantInfo.tenantName"/>
+      <el-table-column label="房号" prop="roomInfo.number"/>
       <!-- 住客不止是一个人数组对象 -->
-      <el-table-column label="入住天数" prop="CheckoutDay"/>
-      <el-table-column label="入住时间" prop="CheckoutTime"/>
+      <el-table-column label="入住天数" prop="checkinDay"/>
+      <el-table-column label="入住时间" prop="checkinTime"/>
       <el-table-column label="退房时间" prop="checkoutTime"/>
       <el-table-column label="房费" prop="money"/>
       <el-table-column label="操作" prop="operation" width="200">
@@ -86,8 +86,8 @@
       </el-table-column>
     </el-table>
     <!-- <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addCheckout(item)"/> -->
-    <update-details ref="updateDetails" title="退房详情"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
+    <update-details ref="updateDetails" title="退房详情"/>
   </div>
 </template>
 
