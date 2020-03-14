@@ -54,9 +54,9 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-      <el-button type="warning" @click="resetForm('roomtypeForm')">取消</el-button>
-      <el-button type="success" @click="submitForm('roomtypeForm')">提交</el-button>
-    </span>
+        <el-button type="primary" @click="resetForm('roomtypeForm')">取消</el-button>
+        <el-button type="primary" @click="submitForm('roomtypeForm')">提交</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -139,19 +139,6 @@ export default {
           this.item = item
         }
       })
-    },
-    formateDate (date) {
-      let theDate = new Date(date)
-      let year = theDate.getFullYear()
-      let month = theDate.getMonth() + 1
-      let day = theDate.getDate()
-      let hour = theDate.getHours()
-      let minute = theDate.getMinutes()
-      let second = theDate.getSeconds()
-      return year + '-' + this.formatTen(month) + '-' + this.formatTen(day) + ' ' + this.formatTen(hour) + ':' + this.formatTen(minute) + ':' + this.formatTen(second)
-    },
-    formatTen (num) {
-      return num > 9 ? (num + '') : ('0' + num)
     },
     beforeupload (file) { // 上传文件之前限制格式和大小
       let fileFormat = file.name.substring(file.name.lastIndexOf('.') + 1) // 获取上传的文件的格式

@@ -60,8 +60,7 @@
       </el-row>
     </el-form>
     <el-row v-for="(room, index) in roomList" :key="index" v-loading="loading">
-      <!-- <el-col :span="11" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 1 : 0"> -->
-      <el-col :span="12" v-for="o in 2" :key="o">
+      <el-col :span="24">
         <el-card :body-style="{ padding: '0px' }" shadow="hover" @cell-mouse-enter="mouseEnter">
           <div class="imgBox">
             <img v-if="room.imgList.length !== 0" :src="room.imgList[0]" class="image" width="280">
@@ -217,19 +216,19 @@ export default {
 
 <style lang="less">
 #room{
-  .el-row {
-    margin-bottom: 10px;
-    .el-col-12:first-child {
-      padding-right: 10px;
-    }
-    .el-col-12:last-child{
-      padding-left: 10px;
-    }
-  }
+  // .el-row {
+  //   margin-bottom: 10px;
+  //   .el-col-12:first-child {
+  //     padding-right: 10px;
+  //   }
+  //   .el-col-12:last-child{
+  //     padding-left: 10px;
+  //   }
+  // }
    .el-card__body {
     display: flex;
     .el-tag {
-      margin: 0 5px 5px 0;
+      margin: 0 5px 8px 0;
     }
   }
 }

@@ -30,9 +30,9 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-      <el-button type="primary" @click="resetForm('serviceForm')">取消</el-button>
-      <el-button type="primary" @click="submitForm('serviceForm')">提交</el-button>
-    </span>
+        <el-button type="primary" @click="resetForm('serviceForm')">取消</el-button>
+        <el-button type="primary" @click="submitForm('serviceForm')">提交</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>

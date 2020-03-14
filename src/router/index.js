@@ -45,13 +45,11 @@ export default new Router({
                 meta: { title: '客房查询' }
               },
               {
-                // 图片上传组件
                 path: '/cropper',
                 component: () => import(/* webpackChunkName: "upload" */ '../components/page/Cropper.vue'),
                 meta: { title: '文件上传(可裁剪)' }
               },
               {
-                // 退房办理组件
                 path: '/checkout',
                 component: () => import(/* webpackChunkName: "i18n" */ '../pub/checkout/index'),
                 meta: { title: '退房办理' }
@@ -60,22 +58,6 @@ export default new Router({
                 path: '/finance',
                 component: () => import(/* webpackChunkName: "donate" */ '../pub/finance/index.vue'),
                 meta: { title: '财务管理' }
-              },
-              // {
-              //   // 权限页面
-              //   path: '/permission',
-              //   component: () => import(/* webpackChunkName: "permission" */ '../components/page/Permission.vue'),
-              //   meta: { title: '权限测试', permission: true }
-              // },
-              {
-                path: '/404',
-                component: () => import(/* webpackChunkName: "404" */ '../components/page/404.vue'),
-                meta: { title: '404' }
-              },
-              {
-                path: '/403',
-                component: () => import(/* webpackChunkName: "403" */ '../components/page/403.vue'),
-                meta: { title: '403' }
               },
               {
                 path: '/updatePwd',

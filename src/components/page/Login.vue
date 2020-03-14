@@ -79,11 +79,6 @@ export default {
           const headImg = res.data.headImg;
           this.setUserdata({ employeeId, number, headImg });
           this.$router.push({ path:'/dashboard'} );
-          // this.$router.replace('/');
-          // const token = res.data[1];
-          // const utype = res.data[0].type;
-          // const roles = res.data[0].roles.map(ele => { return ele.name });
-          // setToken(token);
         },
         ...mapActions("user/", ["setUserdata"])
     },
