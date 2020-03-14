@@ -1,7 +1,7 @@
 <template>
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
+            <div class="ms-title">酒店管理系统</div>
             <el-form :model="loginForm" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="number">
                     <el-input v-model="loginForm.number" placeholder="number">
@@ -21,7 +21,6 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
         </div>
     </div>
@@ -112,11 +111,12 @@ export default {
 .ms-login {
     width: 500px;
     border-radius: 5px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
     overflow: hidden;
 }
 .ms-content {
   padding: 50px 40px;
+  background: transparent;
 }
 .login-btn {
     text-align: center;
@@ -125,10 +125,5 @@ export default {
     width: 100%;
     height: 36px;
     margin-bottom: 10px;
-}
-.login-tips {
-    font-size: 12px;
-    line-height: 30px;
-    color: #fff;
 }
 </style>

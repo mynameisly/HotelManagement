@@ -9,9 +9,9 @@
           <el-select v-model="item.roomType" placeholder="请选择客房类型" clearable>
             <el-option
               v-for="item in roomTypeList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item.roomTypeId"
+              :label="item.roomTypeName"
+              :value="item.roomTypeName">
             </el-option>
           </el-select> 
         </el-form-item>
@@ -81,6 +81,7 @@
 <script>
 import axios from 'axios'
 import { getCategoryList } from '@/api/category'
+import { getAllRoomTypeList } from '@/api/roomtype'
 import { getroomById } from '@/api/room'
 export default {
   props: {
@@ -119,6 +120,7 @@ export default {
   },
   mounted() {
     this.getCategoryList()
+    this.getAllRoomTypeList()
   },
   methods: {
     open (item) { // item就是roomData
@@ -129,6 +131,13 @@ export default {
       } else {
         this.getroomById(item.roomId)
       }
+    },
+    getAllRoomTypeList() {
+      getAllRoomTypeList().then(res => {
+        if(res.code === 0){
+          this.roomTypeList = res.data.data
+        }
+      })
     },
     getCategoryList() {
       getCategoryList().then(res => {

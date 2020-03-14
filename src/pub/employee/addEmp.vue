@@ -57,7 +57,8 @@
 </template>
 
 <script>
-import { uploadFile } from '@/api/uploadFile'
+// import { uploadFile } from '@/api/uploadFile'
+import axios from 'axios'
 import { getPositionList } from '@/api/position';
 export default {
   props: {
@@ -151,33 +152,33 @@ export default {
       let images = [...this.fileList] // 把数组存储为一个参数，便于后期操作
       // 遍历数组
       images.forEach((img, index) => {
-        this.param.append('multipartFiles', img) // 把单个图片重命名，存储起来（给后台）
+        this.param.append('multipartFile', img) // 把单个图片重命名，存储起来（给后台）
       })
 
       return isJPG || isPNG && isLt2M
     },
     onchange (file) { // 当上传图片后，调用onchange方法，获取图片本地路径
       this.param = new FormData()
-      this.param.append('type', 'headImg')
       let config = {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       }
       // 然后通过下面的方式把内容通过axios来传到后台
-      uploadFile (param).then(res =>{
-        console.log('通过url接口得到图片url', res.data)
-      })
+      // uploadFile (param).then(res =>{
+      //   console.log('通过url接口得到图片url', res.data)
+      // })
       // getempList(param).then(res => {
-      // axios({
-      //   method: 'post',
-      //   url: '/json/file/add',
-      //   headers: config,
-      //   data: this.param
-      // }).then((res) => {
-      //   console.log(res.data.data[0].previewUrl) // 图片上传成功之后返回的图片的url
-      //   this.item.headImg = res.data.data[0].previewUrl
-      // }).catch(() => false)
+        axios({
+          method: 'post',
+          url: '/HotelManagement/json/file/add',
+          headers: config,
+          data: this.param
+        }).then((res) => {
+          console.log('图片上传成功之后返回的图片的url',res.data) // 图片上传成功之后返回的图片的url
+          console.log('图片上传成功之后返回的图片的url',res.data.data)
+          this.item.headImg = res.data.data
+        }).catch(() => false)
     },
     getPositionList() {
       getPositionList(null).then(res => {

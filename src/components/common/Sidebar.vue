@@ -15,9 +15,9 @@
                     <el-submenu :index="item.index" :key="item.index">
                         <template slot="title">
                             <i :class="item.icon"></i>
-                            <span slot="title">{{ item.title }}</span>
+                            <span slot="title">{{ item.menuName }}</span>
                         </template>
-                        <template v-for="subItem in item.subs">
+                        <!-- <template v-for="subItem in item.subs">
                             <el-submenu
                                 v-if="subItem.subs"
                                 :index="subItem.index"
@@ -35,13 +35,13 @@
                                 :index="subItem.index"
                                 :key="subItem.index"
                             >{{ subItem.title }}</el-menu-item>
-                        </template>
+                        </template> -->
                     </el-submenu>
                 </template>
                 <template v-else>
                     <el-menu-item :index="item.index" :key="item.index">
                         <i :class="item.icon"></i>
-                        <span slot="title">{{ item.title }}</span>
+                        <span slot="title">{{ item.menuName }}</span>
                     </el-menu-item>
                 </template>
             </template>
@@ -51,6 +51,7 @@
 
 <script>
 import bus from '../common/bus';
+import { getLoginEmployee } from '@/api/login'
 export default {
     data() {
         return {
@@ -59,82 +60,67 @@ export default {
                 {
                     icon: 'el-icon-lx-home',
                     index: 'dashboard',
-                    title: '系统首页'
+                    menuName: '系统首页'
                 },
                 {
                     icon: 'el-icon-lx-cascades',
                     index: 'employee',
-                    title: '员工信息',
-                    subs: [
-                      {
-                        index: 'employee',
-                        title: '员工管理'
-                      },
-                      {
-                        index: 'position',
-                        title: '职位管理'
-                      }
-                    ]
+                    menuName: '员工管理'
                 },
                 {
                     icon: 'el-icon-lx-copy',
                     index: 'roomservice',
-                    title: '客房服务'
+                    menuName: '客户服务'
                 },
+                {
+                    icon: 'el-icon-lx-copy',
+                    index: 'cropper',
+                    menuName: '文件上传(可裁剪)'
+                },
+                // {
+                //     icon: 'el-icon-lx-calendar',
+                //     index: '3',
+                //     title: '客房管理',
+                //     subs: [
+                //         {
+                //             index: 'room',
+                //             title: '客房状态'
+                //         },
+                //         {
+                //             index: 'upload',
+                //             title: '文件上传'
+                //         }
+                //     ]
+                // },
                 {
                     icon: 'el-icon-lx-calendar',
-                    index: '3',
-                    title: '客房信息',
-                    subs: [
-                        {
-                            index: 'room',
-                            title: '客房状态'
-                        },
-                        {
-                            index: 'upload',
-                            title: '文件上传'
-                        }
-                    ]
+                    index: 'room',
+                    menuName: '客房管理'
                 },
                 {
-                    icon: 'el-icon-lx-emoji',
-                    index: 'roomtype',
-                    title: '客房类型'
+                    icon: 'el-icon-s-shop',
+                    index: 'searchroom',
+                    menuName: '客房查询'
                 },
                 {
                     icon: 'el-icon-lx-emoji',
                     index: 'checkin',
-                    title: '入住信息'
+                    menuName: '入住管理'
                 },
                 {
                     icon: 'el-icon-lx-global',
                     index: 'checkout',
-                    title: '退房办理'
-                },
-                {
-                    icon: 'el-icon-lx-warn',
-                    index: '7',
-                    title: '错误处理',
-                    subs: [
-                        {
-                            index: 'permission',
-                            title: '权限测试'
-                        },
-                        {
-                            index: '404',
-                            title: '404页面'
-                        }
-                    ]
+                    menuName: '退房办理'
                 },
                 {
                     icon: 'el-icon-lx-redpacket_fill',
-                    index: '/finance',
-                    title: '财务管理'
+                    index: 'finance',
+                    menuName: '财务管理'
                 }
             ]
         };
     },
-    computed: {
+    computed: {//员工管理、客房管理、客房查询、入住管理、客户服务、财务管理
         onRoutes() {
             return this.$route.path.replace('/', '');
         }
@@ -145,6 +131,57 @@ export default {
             this.collapse = msg;
             bus.$emit('collapse-content', msg);
         });
+    },
+    mounted() {
+        this.getLoginEmployee()
+    },
+    methods: {
+        getLoginEmployee() {
+            getLoginEmployee().then(res => {
+                if(res.data.code == 0){
+                    console.log('当前登录的菜单是',res.data.data.menus)
+                    let menus = res.data.data.menus
+                    for (let i = 0; i < menus.length; i++){
+                        if(menus[i].menuName == '系统首页') {
+                            menus[i].index = 'dashboard'
+                            menus[i].icon = 'el-icon-lx-home'
+                        } else if(menus[i].menuName == '员工管理') {
+                            menus[i].index = 'employee'
+                            menus[i].icon = 'el-icon-lx-cascades'
+                        } else if(menus[i].menuName == '客房管理') {
+                            menus[i].index = 'room'
+                            menus[i].icon = 'el-icon-lx-copy'
+                        } else if(menus[i].menuName == '客房查询') {
+                            menus[i].index = 'searchroom'
+                            menus[i].icon = 'el-icon-s-shop'
+                        }else if(menus[i].menuName == '客房类型') {
+                            menus[i].index = 'roomtype'
+                            menus[i].icon = 'el-icon-lx-emoji'
+                        } else if(menus[i].menuName == '入住管理') {
+                            menus[i].index = 'checkin'
+                            menus[i].icon = 'el-icon-lx-global'
+                        } else if(menus[i].menuName == '客户服务') {
+                            menus[i].index = 'roomservice'
+                            menus[i].icon = 'el-icon-lx-calendar'
+                        } else if(menus[i].menuName == '财务管理') {
+                            menus[i].index = 'finance'
+                            menus[i].icon = 'el-icon-lx-redpacket_fill'
+                        }
+                    }
+                    this.items = menus
+                    console.log('最新的menus是',menus)
+                    // menus.forEach((ele, idx) => {
+                    //     this.items.title = ele.menuName
+                    // })
+                    // const menuChild = {
+                    //     icon: 'el-icon-lx-redpacket_fill',
+                    //     index: 'finance',
+                    //     title: '财务管理'
+                    // }
+                    // console.log('当前登录的菜单是',this.items)
+                }
+            })
+        }
     }
 };
 </script>

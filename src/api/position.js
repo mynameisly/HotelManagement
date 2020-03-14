@@ -9,4 +9,4 @@ export const addPosition = params => { return request({ url: '/HotelManagement/j
 export const updatePosition = params => { return request({ url: '/HotelManagement/json/position/update', method: 'update', params: params }) }
 
 // 职位删除
-export const deletePosition = params => { return request({ url: '/HotelManagement/json/position/delete', method: 'delete', params: params }) }
+export const deletePosition = positionId => { return request({ url: '/HotelManagement/json/position/delete?positionId=' + positionId, method: 'delete', params: positionId }) }
