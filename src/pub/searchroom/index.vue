@@ -1,5 +1,5 @@
 <template>
-  <div id="roomstate">
+  <div id="searchroom">
     <el-form v-model="searchForm" :inline="true">
       <el-row>
         <el-col :span="6" :offset="1">
@@ -59,8 +59,7 @@
       </el-row>
     </el-form>
     <el-row v-for="(room, index) in roomList" :key="index" v-loading="loading">
-      <!-- <el-col :span="11" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 1 : 0"> -->
-      <el-col :span="12" v-for="o in 2" :key="o">
+      <el-col :span="24">
         <el-card :body-style="{ padding: '0px' }" shadow="hover" @cell-mouse-enter="mouseEnter">
           <div class="imgBox">
             <img v-if="room.imgList.length !== 0" :src="room.imgList[0]" class="image" width="280">
@@ -92,6 +91,7 @@
               <el-tag>{{ room.facilities }}</el-tag>
             </div>
             <div class="bottom clearfix">
+            <!-- <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroom(item)"/> -->
               <el-button type="primary" @click="$refs.updateDialog.open(roomData)">查看详情</el-button>
               <el-button type="danger" @click="handleDelete">删除</el-button>
             </div>
@@ -170,20 +170,20 @@ export default {
 </script>
 
 <style lang="less">
-#room{
-  .el-row {
-    margin-bottom: 10px;
-    .el-col-12:first-child {
-      padding-right: 10px;
-    }
-    .el-col-12:last-child{
-      padding-left: 10px;
-    }
-  }
+#searchroom{
+  // .el-row {
+  //   margin-bottom: 10px;
+  //   .el-col-12:first-child {
+  //     padding-right: 10px;
+  //   }
+  //   .el-col-12:last-child{
+  //     padding-left: 10px;
+  //   }
+  // }
    .el-card__body {
     display: flex;
     .el-tag {
-      margin: 0 5px 5px 0;
+      margin: 0 5px 8px 0;
     }
   }
 }

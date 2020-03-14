@@ -45,18 +45,6 @@
                 </el-card>
             </el-col>
         </el-row>
-        <!-- <el-row :gutter="20">
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
-                </el-card>
-            </el-col>
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
-                </el-card>
-            </el-col>
-        </el-row> -->
     </div>
 </template>
 
@@ -69,20 +57,7 @@ export default {
     data() {
         return {
             name: localStorage.getItem('ms_username'),
-            item: {
-                // "number": "",
-                // "readName": "",
-                // "headImg": "",
-                // "telPhone": "",
-                // "email": "",
-                // "qq": "",
-                // "weiXin": "",
-                // "sex": "",
-                // "birthday": "",
-                // "introduce": "",
-                // "createTime": "",
-                // "position": ""
-            }
+            item: {}
         }
     },
     mounted() {

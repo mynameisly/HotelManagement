@@ -2,8 +2,8 @@
   <div id="updateAdd">
     <el-dialog :title="title" :visible.sync="visible" top="8rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="updateForm" :model="item" :rules="rules" label-width="100px">
-        <el-form-item label="房号:" prop="roomId">
-          <el-select v-model="item.roomId" placeholder="请选择房号" @focus='handleNoRepeat' clearable>
+        <el-form-item label="房号:" prop="number">
+          <el-select v-model="item.number" placeholder="请选择房号" @focus='handleNoRepeat' clearable>
             <el-option
               v-for="item in roomList"
               :key="item.value"
@@ -34,10 +34,10 @@ export default {
       firstRoomList: [],
       roomList: [],// 保存房号和roomId
       item: {
-        roomId: ''
+        number: ''
       },
       rules: {
-        roomId: [{ required: true, message: '请选择房号', trigger: 'change' }]
+        number: [{ required: true, message: '请选择房号', trigger: 'change' }]
       }
     }
   },
@@ -51,14 +51,14 @@ export default {
         this.item = {}
       } else {
         this.item = item
+        this.item.number = item.room.number
       }
     },
     getroomList() {
-      getroomList().then(res => {
+      getroomList({state: '空闲'}).then(res => {
         if(res.data.code == 0) {
           this.firstRoomList = res.data.data
           this.handleRoom(res.data.data)
-          // console.log('this.roomList',this.roomList)
         }
       })
     },

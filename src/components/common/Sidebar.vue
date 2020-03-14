@@ -139,7 +139,7 @@ export default {
         getLoginEmployee() {
             getLoginEmployee().then(res => {
                 if(res.data.code == 0){
-                    console.log('当前登录的菜单是',res.data.data.menus)
+                    // console.log('当前登录的菜单是',res.data.data.menus)
                     let menus = res.data.data.menus
                     for (let i = 0; i < menus.length; i++){
                         if(menus[i].menuName == '系统首页') {
@@ -154,12 +154,12 @@ export default {
                         } else if(menus[i].menuName == '客房查询') {
                             menus[i].index = 'searchroom'
                             menus[i].icon = 'el-icon-s-shop'
-                        }else if(menus[i].menuName == '客房类型') {
-                            menus[i].index = 'roomtype'
-                            menus[i].icon = 'el-icon-lx-emoji'
-                        } else if(menus[i].menuName == '入住管理') {
+                        }else if(menus[i].menuName == '入住管理') {
                             menus[i].index = 'checkin'
                             menus[i].icon = 'el-icon-lx-global'
+                        } else if(menus[i].menuName == '退房办理') {
+                            menus[i].index = 'checkout'
+                            menus[i].icon = 'el-icon-lx-emoji'
                         } else if(menus[i].menuName == '客户服务') {
                             menus[i].index = 'roomservice'
                             menus[i].icon = 'el-icon-lx-calendar'
@@ -169,16 +169,6 @@ export default {
                         }
                     }
                     this.items = menus
-                    console.log('最新的menus是',menus)
-                    // menus.forEach((ele, idx) => {
-                    //     this.items.title = ele.menuName
-                    // })
-                    // const menuChild = {
-                    //     icon: 'el-icon-lx-redpacket_fill',
-                    //     index: 'finance',
-                    //     title: '财务管理'
-                    // }
-                    // console.log('当前登录的菜单是',this.items)
                 }
             })
         }

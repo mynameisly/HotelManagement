@@ -38,25 +38,20 @@
             </el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <el-form-item label="最低房价：" prop="startMoney">
-            <el-input v-model="searchForm.startMoney" placeholder="请输入最低房价" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="最高房价：" prop="endMoney">
-            <el-input v-model="searchForm.endMoney" placeholder="请输入最高房价" clearable/>
+        <el-col :span="12">
+          <el-form-item label="房费区间：" prop="startMoney">
+            <el-input v-model="searchForm.startMoney" placeholder="最低房费" clearable style="width:48%"/>-
+            <el-input v-model="searchForm.endMoney" placeholder="最高房费" clearable style="width:48%"/>
           </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="getCheckinList(searchForm)">查询</el-button>
             <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <!-- el-table中的height用于固定表头 -->
     <el-table
       border
       height="370"
@@ -77,7 +72,7 @@
       <el-table-column label="入住天数" prop="checkinDay"/>
       <el-table-column label="价格" prop="money"/>
       <el-table-column label="退房时间" prop="expectCheckoutTime"/>
-      <el-table-column label="操作" prop="operation" width="200">
+      <el-table-column label="操作" prop="operation" width="260">
         <template>
           <el-button
             type="text"
@@ -105,7 +100,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addcheckin(item)"/>
+    <add-dialog ref="addDialog" title="新增入住" @confirmData="(item) => addcheckin(item)"/>
     <update-details ref="updateDetails" title="入住详情"/>
     <update-dialog ref="updateDialog" title="修改入住天数" @confirmData="(item) => updateCheckin(item)"/>
     <update-room ref="updateRoom" title="换房" @confirmData="(item) => updateRoom(item)"/>
@@ -121,6 +116,7 @@ import UpdateRoom from './updateroom'
 import { getCheckinList,addCheckin,updateCheckin,updateRoom } from '@/api/checkin';
 import { addCheckout } from '@/api/checkout';
 import PageComponent from '@/components/Pagenation/index'
+import { formateDate } from '@/utils/formateDate';
 export default {
   components: {
     PageComponent,
@@ -155,12 +151,21 @@ export default {
     this.getCheckinList(null);
   },
   methods: {
+    formateDate,
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
       const para = { currentPage: item.currentPage, pageSize: item.pageSize };
       this.getCheckinList(para);
     },
     getCheckinList(param) {
+      if (this.searchForm.createTimeRange == null || this.searchForm.createTimeRange == '') {
+        this.searchForm.statTime = ''
+        this.searchForm.endTime = ''
+      } else {
+        this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
+        this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
+      }
+      console.log('查询蚕食是param',this.searchForm)
       getCheckinList(param).then(res => {
         console.log('返回的数据是',res.data)
         this.checkinList = res.data.data
@@ -171,7 +176,7 @@ export default {
       this.checkinData = Object.assign({}, data)
     },
     addcheckin (item) {
-      console.log('新增通知', item)
+      console.log('新增入住通知', item)
       const param = {
         "checkinDay": item.checkinDay,
         "errorInfo": {},
@@ -184,11 +189,15 @@ export default {
         }]
       }
       console.log('param', param)
-      const headers = { 'content-type': 'application/json;charset=utf-8'}
-      // console.log('param', JSON.stringify(param))
+      const headers = { 'Content-type': 'application/json;charset=utf-8'}
       addCheckin(JSON.stringify(param),headers).then(res => {
         console.log('新增入住',res)
-        if (res.data.code === 0) {
+        if (res.data.code == 5) {
+          this.$message({
+            type: 'warning',
+            message: res.data.data
+          })
+        } else if (res.data.code === 0) {
           this.$message({
             type: 'success',
             message: '新增入住成功'
