@@ -166,6 +166,10 @@ export default {
     getServiceHistoryList(param) {
       getServiceHistoryList(param).then(res => {
         console.log('客房服务返回的数据是',res.data)
+        this.page.currentPage = res.data.page.page
+        this.page.pageSize = res.data.page.limit
+        this.page.totalPage = res.data.page.totalPages
+        this.page.totalSize = res.data.page.totalRows
         if(res.data.code == 0){
           this.serviceList = res.data.data
         }

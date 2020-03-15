@@ -64,36 +64,33 @@
         <el-card :body-style="{ padding: '0px' }" shadow="hover" @cell-mouse-enter="mouseEnter">
           <div class="imgBox">
             <img v-if="room.imgList.length !== 0" :src="room.imgList[0]" class="image" width="280">
-            <img v-else src="../../assets/img/280.jpg" width="280">
+            <img v-else src="../../assets/img/280.jpg" width="240">
           </div>
-          <div style="padding: 14px;">
+          <div class="contentBox">
             <div>
-              <el-tag>{{ room.number }}</el-tag>
-              <el-tag>{{ room.roomType }}</el-tag>
-              <el-tag>可住{{ room.peopleNum }}人</el-tag>
+              <a>{{ room.number }}</a>
+              <a>{{ room.state }}</a>
+              <a>可住{{ room.peopleNum }}人</a>
+              <a>更新时间：{{ room.updateTime }}</a>
             </div>
             <div>
-              <el-tag>{{ room.bedType }}</el-tag>
-              <el-tag>{{ room.bedDetail }}</el-tag>
-              <el-tag>{{ room.window }}</el-tag>
+              <a>{{ room.bedType }}</a>
+              <a>{{ room.bedDetail }}</a>
+              <a>{{ room.window }}</a>
             </div>
             <div>
-              <el-tag>{{ room.jiaChuang }}</el-tag>
-              <el-tag>价格：{{ room.price }}</el-tag>
+              <a>{{ room.jiaChuang }}</a>
+              <a>单价：{{ room.price }}</a>
             </div>
             <div>
-              <el-tag>{{ room.state }}</el-tag>
-              <el-tag>{{ room.updateTime }}</el-tag>
+              <a>{{ room.remark }}</a>
             </div>
             <div>
-              <el-tag>{{ room.remark }}</el-tag>
-            </div>
-            <div>
-              <el-tag>{{ room.facilities }}</el-tag>
+              <a>{{ room.facilities }}</a>
             </div>
             <div class="bottom clearfix">
-            <!-- <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroomtype(item)"/> -->
-              <el-button type="primary" @click="$refs.updateDialog.open(roomTypeData)">查看详情</el-button>
+            <!-- <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroom(item)"/> -->
+              <el-button type="primary" @click="$refs.updateDialog.open(roomData)">查看详情</el-button>
               <el-button type="danger" @click="handleDelete">删除</el-button>
             </div>
           </div>
@@ -154,6 +151,10 @@ export default {
       getRoomTypeList(param).then(res => {
         console.log('返回的客房类型数据是',res.data)
         console.log(res.data.data)
+        this.page.currentPage = res.data.page.page
+        this.page.pageSize = res.data.page.limit
+        this.page.totalPage = res.data.page.totalPages
+        this.page.totalSize = res.data.page.totalRows
         this.roomTypeList = res.data.data
         this.loading = false;
       })
@@ -227,8 +228,14 @@ export default {
   // }
    .el-card__body {
     display: flex;
-    .el-tag {
-      margin: 0 5px 5px 0;
+    .contentBox {
+      padding: 14px;
+      div{
+        margin-bottom: 10px;
+        a {
+          margin: 0 15px 15px 0;
+        }
+      }
     }
   }
 }

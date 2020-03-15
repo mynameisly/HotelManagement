@@ -33,7 +33,7 @@
         <el-form-item label="联系电话:" prop="telPhone">
           <el-input v-model="item.telPhone"  palceholder="请输入联系电话" clearable/>        
         </el-form-item>
-         <el-form-item label="头像" prop="headImg" >
+         <el-form-item label="头像:" prop="headImg" >
           <el-upload
             class="avatar-uploader"
             action=""
@@ -46,6 +46,9 @@
             <i v-else class="el-icon-plus avatar-uploader-icon" />
             <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
           </el-upload>
+        </el-form-item>
+        <el-form-item label="备注:">
+          <strong>新增员工后，初始密码为123abc</strong>
         </el-form-item>
       </el-form>
       <span slot="footer">

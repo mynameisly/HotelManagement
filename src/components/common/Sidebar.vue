@@ -157,7 +157,7 @@ export default {
                         }else if(menus[i].menuName == '入住管理') {
                             menus[i].index = 'checkin'
                             menus[i].icon = 'el-icon-lx-global'
-                        } else if(menus[i].menuName == '退房办理') {
+                        } else if(menus[i].menuName == '退房记录') {
                             menus[i].index = 'checkout'
                             menus[i].icon = 'el-icon-lx-emoji'
                         } else if(menus[i].menuName == '客户服务') {

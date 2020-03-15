@@ -29,6 +29,7 @@
                         <a href="https://github.com/mynameisly/HotelManagement" target="_blank">
                             <el-dropdown-item>项目仓库</el-dropdown-item>
                         </a>
+                        <el-dropdown-item divided command="updatePwd">修改密码</el-dropdown-item>
                         <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -81,7 +82,9 @@ export default {
         })
       },
       handleCommand(command) { // 用户名下拉菜单选择事件
-        if (command == 'loginout') {
+        if (command == 'updatePwd') { // 修改密码
+          this.$router.push({path:'/updatePwd'})
+        } else if (command == 'loginout') {
           // localStorage.removeItem('ms_username');
           // this.$router.push('/login');
           loginout(null).then(res => {
