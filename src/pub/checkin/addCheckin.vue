@@ -15,8 +15,21 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="身份证:" prop="tenantIdCard">
+        <!-- <el-form-item label="身份证:" prop="tenantIdCard">
           <el-input v-model="item.tenantIdCard"  palceholder="请输入房客身份证" clearable/>
+        </el-form-item> -->
+        <el-form-item
+          v-for="(domain, index) in item.tenantIdCard"
+          :label="'身份证号' + index"
+          :key="domain.key"
+          :prop="'tenantIdCard.' + index + '.value'"
+          :rules="
+          [{ required: true, message: '请输入身份证号', trigger: 'blur' },
+          { validator: cheackCard, trigger: 'blur' }]
+          "
+        >
+          <el-input v-model="domain.value"></el-input>
+          <el-button @click.prevent="removeDomain(domain)">删除</el-button>
         </el-form-item>
         <el-form-item label="联系电话:" prop="tenantTel">
           <el-input v-model="item.tenantTel"  palceholder="请输入联系电话" clearable/>
@@ -32,6 +45,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
+          <el-button type="primary" @click="addDomain">新增住客</el-button>
         <el-button type="primary" @click="resetForm('checkinForm')">取消</el-button>
         <el-button type="primary" @click="submitForm('checkinForm')">提交</el-button>
       </span>
@@ -71,8 +85,11 @@ export default {
         roomId: '',
         tenantName: '',
         tenantTel: '',
-        tenantIdCard: '',
-        tenantSex: ''
+        // tenantIdCard: '',
+        tenantSex: '',
+        tenantIdCard: [{
+          value: ''
+        }],
       },
       rules: {
         checkinDay: [{ required: true, message: '请输入', trigger: 'blur' }],
@@ -86,10 +103,10 @@ export default {
             trigger: "blur"
           }
           ],
-        tenantIdCard: [
-          { required: true, message: "请输入身份证号", trigger: "blur" },
-          { validator: cheackCard, trigger: "blur" }
-          ],
+        // tenantIdCard: [
+        //   { required: true, message: "请输入身份证号", trigger: "blur" },
+        //   { validator: cheackCard, trigger: "blur" }
+        //   ],
         tenantSex: [{ required: true, message: '请选择', trigger: 'change' }],
       }
     }
@@ -137,6 +154,18 @@ export default {
       }
       this.roomList = roomList
       console.log('this.rooLisst', this.roomList)
+    },
+    removeDomain(item) {
+      var index = this.item.tenantIdCard.indexOf(item)
+      if (index !== -1) {
+        this.item.tenantIdCard.splice(index, 1)
+      }
+    },
+    addDomain() {
+      this.item.tenantIdCard.push({
+        value: '',
+        key: Date.now()
+      });
     },
     submitForm (checkinForm) {
       // this.$refs.checkinForm.validate(valid => {

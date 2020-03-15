@@ -1,7 +1,7 @@
 <template>
   <div id="checkinAdd">
     <el-dialog :title="title" :visible.sync="visible" top="8rem" width="80%" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form :model="item" :rules="rules" label-width="100px">
+      <el-form :model="item" label-width="100px">
         <el-row>
             <el-col :span="6">
                 <el-form-item label="房号:">
@@ -65,8 +65,16 @@
                 </el-form-item>
             </el-col>
         </el-row>
-
       </el-form>
+      <el-table
+        border
+        height="220"
+        :data="tenants">
+        <el-table-column label="住客姓名" prop="tenantName"/>
+        <el-table-column label="性别" prop="tenantSex"/>
+        <el-table-column label="联系方式" prop="tenantTel"/>
+        <el-table-column label="身份证" prop="tenantIdCard"/>
+      </el-table>
       <span slot="footer">
         <el-button type="primary" @click="cancel">取消</el-button>
       </span>
@@ -84,7 +92,8 @@ export default {
   data () {
     return {
       visible: false,
-      item: {}
+      item: {},
+      tenants: []
     }
   },
   mounted () {
@@ -105,6 +114,7 @@ export default {
         console.log('根据id查询入住信息',res.data)
         if (res.data.code == 0){
           this.item = res.data.data.room
+          this.tenants = res.data.data.tenants
         }
       })
     },
