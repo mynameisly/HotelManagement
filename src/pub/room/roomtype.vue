@@ -59,7 +59,65 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-row v-for="(room, index) in roomTypeList" :key="index" v-loading="loading">
+    <el-table
+      border
+      height="380"
+      :data="roomTypeList"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      @cell-mouse-enter="mouseEnter"
+        >
+      <el-table-column label="序号" type="index" width="55">
+        <template slot-scope="scope">
+          <!-- (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1  -->
+          <span>{{ (page.currentPage - 1) * page.pageSize + scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="房号" prop="number"/> -->
+      <el-table-column label="客房类型" prop="roomTypeName" width="100"/>
+      <el-table-column label="楼层" prop="floor"/>
+      <el-table-column label="面积" prop="area"/>
+      <el-table-column label="可住人数" prop="peopleNum"/>
+      <el-table-column label="单价" prop="price"/>
+      <!-- <el-table-column label="客房状态" prop="state"/> -->
+      <el-table-column label="床型" prop="bedType"/>
+      <el-table-column label="床型细节" prop="bedDetail" width="100"/>
+      <el-table-column label="是否可加床" prop="jiaChuang" width="100"/>
+      <el-table-column label="客房设施" prop="facilities" width="400"/>
+      <!-- <el-table-column label="备注" prop="remark" width="200"/> -->
+      <el-table-column label="操作" prop="operation" width="240">
+        <template>
+          <el-button
+            type="text"
+            icon="el-icon-edit"
+            @click="$refs.updateDialog.open(roomTypeData)"
+          >查看详情</el-button>
+          <el-button
+            type="text"
+            style="margin-left: 16px;"
+            icon="el-icon-s-tools"
+            @click="drawer = true"
+          >查看图片</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            class="red"
+            @click="handleDelete"
+          >删除</el-button>
+        </template>
+      </el-table-column>
+      <el-drawer
+        title="客房图片详情"
+        :visible.sync="drawer"
+        :append-to-body='true'
+        direction="rtl"
+        size="50%">
+          <div v-for="(img, index) in roomTypeData.imgList" :key="index">
+            <img :src="img" alt="图片暂时无法找到">
+          </div>
+      </el-drawer>
+    </el-table>
+    <!-- <el-row v-for="(room, index) in roomTypeList" :key="index" v-loading="loading">
       <el-col :span="24">
         <el-card :body-style="{ padding: '0px' }" shadow="hover" @cell-mouse-enter="mouseEnter">
           <div class="imgBox">
@@ -89,14 +147,13 @@
               <a>{{ room.facilities }}</a>
             </div>
             <div class="bottom clearfix">
-            <!-- <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroom(item)"/> -->
               <el-button type="primary" @click="$refs.updateDialog.open(roomData)">查看详情</el-button>
               <el-button type="danger" @click="handleDelete">删除</el-button>
             </div>
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
     <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addroomtype(item)"/>
     <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroomtype(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
@@ -118,6 +175,7 @@ export default {
   data () {
     return {
       loading: true,
+      drawer: false,
       searchForm: {
         number: '',
         roomType: '',
@@ -144,13 +202,12 @@ export default {
   methods: {
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getRoomTypeList(para);
     },
     getRoomTypeList(param) {
       getRoomTypeList(param).then(res => {
-        console.log('返回的客房类型数据是',res.data)
-        console.log(res.data.data)
+        // console.log('返回的客房类型数据是',res.data)
         this.page.currentPage = res.data.page.page
         this.page.pageSize = res.data.page.limit
         this.page.totalPage = res.data.page.totalPages

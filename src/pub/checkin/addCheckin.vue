@@ -141,7 +141,7 @@ export default {
     submitForm (checkinForm) {
       // this.$refs.checkinForm.validate(valid => {
         // if (valid) {
-      alert(111111)
+      // alert(111111)
           this.$confirm('确认保存吗？', '是否保存', {
             cancelButtonText: '取消',
             confirmButtonText: '确认',

@@ -1,6 +1,6 @@
 <template>
   <div id="empAdd">
-    <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
+    <el-dialog :title="title" :visible.sync="visible" top="8rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="serviceForm" :model="item" :rules="rules" label-width="100px">
         <el-form-item label="房号:" prop="roomNumber">
           <el-input v-model="item.roomNumber"  palceholder="请输入房号" clearable/>
@@ -94,7 +94,7 @@ export default {
       return empList
     },
     getCategoryList() {
-      getCategoryList({type: '服务类型'}).then(res => {
+      getCategoryList({type: '客户服务'}).then(res => {
         this.categoryList = this.handleCategory(res.data.data)
       })
     },

@@ -27,12 +27,6 @@
         <el-form-item label="价格：" prop="price">
           <el-input v-model="item.price" placeholder="请输入价格" clearable/>
         </el-form-item>
-        <el-form-item label="是否有窗:" prop="window">
-          <el-radio-group v-model="item.window">
-            <el-radio v-model="item.window" label="有窗" border>有窗</el-radio>
-            <el-radio v-model="item.window" label="无窗" border>无窗</el-radio>
-          </el-radio-group>
-        </el-form-item>
         <el-form-item label="床型：" prop="bedType">
           <el-select v-model="item.bedType" placeholder="请选择床型" clearable>
             <el-option
@@ -43,15 +37,21 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="是否可加床："  prop="jiaChuang">
+          <el-select v-model="item.jiaChuang" placeholder="是否可加床" clearable>
+            <el-option key="1" label="可加床（1.8米大床，50/天）" value="可加床（1.8米大床，50/天）"></el-option>
+            <el-option key="2" label="不可加床" value="不可加床"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否有窗:" prop="window">
+          <el-radio-group v-model="item.window">
+            <el-radio v-model="item.window" label="有窗" border>有窗</el-radio>
+            <el-radio v-model="item.window" label="无窗" border>无窗</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="床型具体说明：" prop="bedDetail">
           <el-input type="textarea" :rows="2" v-model="item.bedDetail" resize="none" maxlength="200" show-word-limit palceholder="床型具体说明"></el-input>
         </el-form-item>
-          <el-form-item label="是否可加床："  prop="jiaChuang">
-            <el-select v-model="item.jiaChuang" placeholder="是否可加床" clearable>
-              <el-option key="1" label="可加床（1.8米大床，50/天）" value="可加床（1.8米大床，50/天）"></el-option>
-              <el-option key="2" label="不可加床" value="不可加床"></el-option>
-            </el-select>
-          </el-form-item>
         <el-form-item label="房间设施说明：" prop="facilities">
           <el-input type="textarea" :rows="2" v-model="item.facilities" resize="none" maxlength="200" show-word-limit palceholder="房间设施说明"></el-input>
         </el-form-item>

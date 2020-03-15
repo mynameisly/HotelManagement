@@ -39,7 +39,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="房费区间：" prop="startMoney">
+          <el-form-item label="房费：" prop="startMoney">
             <el-input v-model="searchForm.startMoney" placeholder="最低房费" clearable style="width:48%"/>-
             <el-input v-model="searchForm.endMoney" placeholder="最高房费" clearable style="width:48%"/>
           </el-form-item>
@@ -60,7 +60,6 @@
       element-loading-text="拼命加载中"
       @cell-mouse-enter="mouseEnter"
         >
-      <el-table-column type="selection" align="center" />
        <el-table-column label="序号" type="index" width="55">
         <template slot-scope="scope">
           <!-- (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1  -->
@@ -153,8 +152,7 @@ export default {
   methods: {
     formateDate,
     handlePageChange(item) {
-      // console.log(item);// currentPage=1  pageSize=30条
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getCheckinList(para);
     },
     getCheckinList(param) {
@@ -165,8 +163,13 @@ export default {
         this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
         this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
       }
+      this.searchForm.createTimeRange = ''
       console.log('查询蚕食是param',this.searchForm)
       getCheckinList(param).then(res => {
+        this.page.currentPage = res.data.page.page
+        this.page.pageSize = res.data.page.limit
+        this.page.totalPage = res.data.page.totalPages
+        this.page.totalSize = res.data.page.totalRows
         console.log('返回的数据是',res.data)
         this.checkinList = res.data.data
         this.loading = false;
@@ -175,7 +178,7 @@ export default {
     mouseEnter (data) {
       this.checkinData = Object.assign({}, data)
     },
-    addcheckin (item) {
+    addcheckin (item) { // 新增的住客不止一个，可能有多个人，这种写法不行
       console.log('新增入住通知', item)
       const param = {
         "checkinDay": item.checkinDay,
@@ -240,21 +243,27 @@ export default {
         this.getCheckinList()
       })
     },
-    checkout(checkinData){ // money怎末搞
+    checkout(checkinData){
+    this.$confirm('确认保存吗？', '是否保存', {
+      cancelButtonText: '取消',
+      confirmButtonText: '确认',
+      lockScroll: false,
+      type: 'warning'
+    }).then(() => {
       const param = {
         checkinId: checkinData.checkinId,
-        money: 100
+        money: 100 // money怎末搞
       }
       addCheckout(param).then(res => {
-        console.log('换房的返回的数据是',res.data)
+        console.log('退房的返回的数据是',res.data)
         if(res.data.code == 0){
           this.$message({
             type: 'success',
-            message: '换房成功'
+            message: '退房成功'
           })
         }
-        this.getCheckinList()
       })
+    })
     }
   }
 }

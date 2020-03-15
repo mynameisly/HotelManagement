@@ -39,13 +39,17 @@
         </el-col>
         <el-col :span="4">
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getServiceHistoryList(searchForm)">查询</el-button>
-            <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="getServiceList(searchForm)">查询</el-button>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-button type="primary" icon="el-icon-search" @click="$refs.currentService.open(categoryList)">正在进行</el-button>
+        <el-col :span="12">
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="$refs.historyService.open(categoryList)">查询历史服务</el-button>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-form>
     <!-- el-table中的height用于固定表头 -->
@@ -62,11 +66,10 @@
           <span>{{ (page.currentPage - 1) * page.pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="房号" prop="roomNumber"/>
-      <el-table-column label="员工" prop="employeeName"/>
+      <el-table-column label="员工姓名" prop="employeeName"/>
       <el-table-column label="服务类型" prop="categoryName"/>
-      <el-table-column label="开始时间" prop="serviceStartTime"/>
-      <el-table-column label="结束时间" prop="serviceEndTime"/>
+      <el-table-column label="房号" prop="roomNumber"/>
+      <el-table-column label="服务时间" prop="createTime"/>
       <el-table-column label="备注" prop="remark"/>
       <el-table-column label="操作" prop="operation" width="200">
         <template>
@@ -75,6 +78,11 @@
             icon="el-icon-edit"
             @click="$refs.updateDialog.open(serviceData)"
           >修改</el-button>
+          <el-button
+            type="text"
+            icon="el-icon-check"
+            @click="finishService"
+            >服务完成</el-button>
           <el-button
             type="text"
             icon="el-icon-delete"
@@ -86,7 +94,7 @@
     </el-table>
     <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addservice(item)"/>
     <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateservice(item)"/>
-    <current-service ref="currentService" title="正在进行的服务"/>
+    <history-service ref="historyService" title="历史服务"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
@@ -94,8 +102,8 @@
 <script>
 import AddDialog from './addService'
 import updateDialog from './addService'
-import currentService from './currentService'
-import { getServiceHistoryList,addService,updateService,delService } from '@/api/service';
+import historyService from './historyService'
+import { getServiceList,addService,updateService,delService,finishService } from '@/api/service';
 import { getempList } from '@/api/employee';
 import { getCategoryList } from '@/api/category';
 import PageComponent from '@/components/Pagenation/index'
@@ -104,7 +112,7 @@ export default {
     PageComponent,
     AddDialog,
     updateDialog,
-    currentService
+    historyService
   },
   data () {
     return {
@@ -127,7 +135,7 @@ export default {
     }
   },
   mounted () {
-    this.getServiceHistoryList(null);
+    this.getServiceList(null);
     this.getempList();
     this.getCategoryList();
   },
@@ -159,12 +167,11 @@ export default {
       return categoryList
     },
     handlePageChange(item) {
-      // console.log(item);// currentPage=1  pageSize=30条
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
-      this.getServiceHistoryList(para);
+      const para = { page: item.currentPage, limit: item.pageSize };
+      this.getServiceList(para);
     },
-    getServiceHistoryList(param) {
-      getServiceHistoryList(param).then(res => {
+    getServiceList(param) {
+      getServiceList(param).then(res => {
         console.log('客房服务返回的数据是',res.data)
         this.page.currentPage = res.data.page.page
         this.page.pageSize = res.data.page.limit
@@ -188,7 +195,7 @@ export default {
             type: 'success',
             message: '新增客房类型成功'
           })
-          this.getServiceHistoryList()
+          this.getServiceList()
         }
       })
     },
@@ -201,8 +208,19 @@ export default {
             type: 'success',
             message: '修改客房类型成功'
           })
-          this.getServiceHistoryList()
+          this.getServiceList()
         }
+      })
+    },
+    finishService(){
+      finishService(this.serviceData.id).then(res => {
+        if (res.data.code == 0){
+          this.$message({
+            type: 'success',
+            message: '该服务已完成'
+          })
+        }
+        this.getServiceList()
       })
     },
     handleDelete () {
@@ -212,13 +230,13 @@ export default {
         type: 'warning',
         center: true
       }).then((res) => {
-        delService(this.serviceData.customerServiceId).then(res => {
+        delService(this.serviceData.id).then(res => {
           if (res.data.code === 0) {
             this.$message({
               type: 'success',
               message: '删除成功'
             })
-            this.getServiceHistoryList()
+            this.getServiceList()
           }
         })
       }).catch(() => {

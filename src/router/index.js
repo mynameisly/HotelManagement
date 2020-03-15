@@ -52,7 +52,7 @@ export default new Router({
               {
                 path: '/checkout',
                 component: () => import(/* webpackChunkName: "i18n" */ '../pub/checkout/index'),
-                meta: { title: '退房办理' }
+                meta: { title: '退房记录' }
               },,
               {
                 path: '/finance',

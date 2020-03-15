@@ -41,26 +41,17 @@
 
       <el-table
         border
-        height="240"
+        height="300"
         :data="currentServiceInfo"
         element-loading-text="拼命加载中"
         @cell-mouse-enter="mouseEnter"
         >
         <el-table-column label="住客信息">
-          <el-table-column label="员工姓名" prop="employeeName"/>
-          <el-table-column label="服务类型" prop="categoryName"/>
           <el-table-column label="房号" prop="roomNumber"/>
-          <el-table-column label="服务时间" prop="createTime"/>
-          <el-table-column label="操作" prop="operation" width="200">
-            <template>
-              <el-button
-                type="text"
-                icon="el-icon-edit"
-                class="red"
-                @click="finishService()"
-              >服务完成</el-button>
-            </template>
-        </el-table-column>
+          <el-table-column label="员工" prop="employeeName"/>
+          <el-table-column label="服务类型" prop="categoryName"/>
+          <el-table-column label="开始时间" prop="serviceStartTime"/>
+          <el-table-column label="结束时间" prop="serviceEndTime"/>
         </el-table-column>
       </el-table>
       <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
@@ -72,8 +63,9 @@
 </template>
 
 <script>
-import { getServiceList,finishService } from '@/api/service';
+import { getServiceHistoryList } from '@/api/service';
 import PageComponent from '@/components/Pagenation/index'
+import { formateDate } from '@/utils/formateDate';
 export default {
   components: {
     PageComponent
@@ -86,9 +78,9 @@ export default {
     return {
       visible: false,
       searchForm: {
-        'employeeName': '',
-        'createTimeRange': '',
-        'categoryName': ''
+        employeeName: '',
+        createTimeRange: '',
+        categoryName: ''
       },
       currentServiceInfo: [],
       categoryList: [],
@@ -102,16 +94,25 @@ export default {
     }
   },
   mounted () {
-    this.getServiceList()
+    this.getServiceHistoryList(null)
   },
   methods: {
+    formateDate,
     open (categoryList) {
       this.visible = true
       this.categoryList = categoryList
     },
-    getServiceList(searchForm) {
-      getServiceList(searchForm).then(res => {
-        
+    getServiceHistoryList(param) {
+      if (this.searchForm.createTimeRange == null || this.searchForm.createTimeRange == '') {
+        this.searchForm.statTime = ''
+        this.searchForm.endTime = ''
+      } else {
+        this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
+        this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
+      }
+      this.searchForm.createTimeRange = ''
+      getServiceHistoryList(param).then(res => {
+        console.log('历史服务信息res是', res)
         if (res.data.code == 0){
           this.currentServiceInfo = res.data.data
         }
@@ -119,23 +120,11 @@ export default {
     },
     handlePageChange(item) {
       const para = { currentPage: item.currentPage, pageSize: item.pageSize };
-      this.getServiceList(para);
+      this.getServiceHistoryList(para);
     },
     mouseEnter (data) {
       this.serviceData = Object.assign({}, data)
       console.log('h行信息',this.serviceData)
-    },
-    finishService(){
-      const id = this.serviceData.id
-      finishService(id).then(res => {
-        // console.log('完成的服务信息',res.data)
-        if (res.data.code == 0){
-          this.$message({
-            type: 'success',
-            message: '该服务已完成'
-          })
-        }
-      })
     },
     cancel () {
       this.visible = false
