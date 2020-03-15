@@ -1,11 +1,11 @@
 <template>
   <div id="roomAdd">
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form ref="roomForm" :model="item" :rules="rules" label-width="100px">
+      <el-form ref="roomForm" :model="item" :rules="rules" label-width="120px">
         <el-form-item label="房号：" prop="number">
           <el-input v-model="item.number" placeholder="请输入房号" clearable/>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="客房类型：" prop="roomType">
           <el-select v-model="item.roomType" placeholder="请选择客房类型" clearable>
             <el-option
               v-for="item in roomTypeList"
@@ -62,7 +62,7 @@
             :data="uptoken"
             :show-file-list="false"
             :on-change="onchange"
-            :before-upload="beforeAvatarUpload"
+            :before-upload="beforeupload"
           >
             <img v-if="item.imgUrls" :src="item.imgUrls" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     open (item) { // item就是roomData
-    console.log('item',item)
+    console.log('查看详情的item',item)
       this.visible = true
       if (item === null || item === undefined) {
         this.item = {}
@@ -134,15 +134,16 @@ export default {
     },
     getAllRoomTypeList() {
       getAllRoomTypeList().then(res => {
-        if(res.code === 0){
+        if(res.data.code === 0){
           this.roomTypeList = res.data.data
         }
       })
     },
     getCategoryList() {
-      getCategoryList().then(res => {
-        if(res.code === 0){
-          this.bedTypeList = res.data.categoryName
+      getCategoryList({type:'床型'}).then(res => {
+        console.log('搜索床型结果是',res)
+        if(res.data.code === 0){
+          this.bedTypeList = res.data.data
         }
       })
     },
@@ -150,8 +151,8 @@ export default {
       console.log('进入到根据ID查询客房类型')
       getroomById(id).then(res => {
         console.log('根据ID查询客房类型返回数据是，', res)
-        if(res.code === 0){
-          this.item = item
+        if(res.data.code === 0){
+          this.item = res.data.data
         }
       })
     },

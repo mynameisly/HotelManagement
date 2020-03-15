@@ -139,10 +139,12 @@ export default {
       }
     },
     getEmployeeById() {
+      console.log()
       getEmployeeById(this.employeeId).then(res => {
         console.log('该员工的信息是，',res)
         if(res.data.code === 0) {
           this.item = res.data.data
+          this.item.position = res.data.data.position.positionName
         }
       })
     },

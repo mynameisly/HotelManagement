@@ -94,7 +94,7 @@ export default {
       return empList
     },
     getCategoryList() {
-      getCategoryList(null).then(res => {
+      getCategoryList({type: '服务类型'}).then(res => {
         this.categoryList = this.handleCategory(res.data.data)
       })
     },

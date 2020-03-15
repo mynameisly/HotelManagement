@@ -70,8 +70,8 @@
       <el-table-column label="房号" prop="room.number"/>
       <el-table-column label="入住时间" prop="checkinTime"/>
       <el-table-column label="入住天数" prop="checkinDay"/>
-      <el-table-column label="价格" prop="money"/>
-      <el-table-column label="退房时间" prop="expectCheckoutTime"/>
+      <el-table-column label="房费" prop="money"/>
+      <el-table-column label="预计退房时间" prop="expectCheckoutTime"/>
       <el-table-column label="操作" prop="operation" width="260">
         <template>
           <el-button

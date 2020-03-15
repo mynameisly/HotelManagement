@@ -21,10 +21,10 @@
             </el-form-item>
         </el-col>
         <el-col :span="5">
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
-                <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
-            </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -37,7 +37,6 @@
       element-loading-text="拼命加载中"
       @cell-mouse-enter="mouseEnter"
         >
-      <el-table-column type="selection" align="center" />
        <el-table-column label="序号" type="index" width="55">
         <template slot-scope="scope">
           <!-- (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1  -->
@@ -59,8 +58,8 @@
       <el-table-column label="邮箱" prop="email"/>
       <el-table-column label="微信" prop="weiXin"/>
       <el-table-column label="QQ" prop="qq"/>
-      <el-table-column label="操作" prop="operation" width="300">
-        <template slot-scope="scope">
+      <el-table-column label="操作" prop="operation" width="200">
+        <template>
           <el-button
             type="text"
             icon="el-icon-edit"
@@ -71,11 +70,6 @@
             icon="el-icon-s-tools"
             @click="handleReset"
           >重置密码</el-button>
-          <el-button
-            type="text"
-            icon="el-icon-setting"
-            @click="handleUpdate"
-          >修改密码</el-button>
           <el-button
             type="text"
             icon="el-icon-delete"
@@ -131,10 +125,10 @@ export default {
     },
     getempList(param) {
       getempList(param).then(res => {
-        // this.page.currentPage = res.data.page.page
-        // this.page.pageSize = res.data.page.limit
-        // this.page.totalPage = res.data.page.totalPages
-        // this.page.totalSize = res.data.page.totalRows
+        this.page.currentPage = res.data.page.page
+        this.page.pageSize = res.data.page.limit
+        this.page.totalPage = res.data.page.totalPages
+        this.page.totalSize = res.data.page.totalRows
         // console.log('返回的数据是',res.data)
         // console.log(res.data.data)
         if (res.data.code === 3) {
@@ -199,7 +193,7 @@ export default {
         type: 'warning',
         center: true
       }).then((res) => {
-        delemp(this.empData.empId).then(res => {
+        delemp(this.empData.employeeId).then(res => {
           if (res.data.code === 0) {
             this.$message({
               type: 'success',
@@ -215,19 +209,30 @@ export default {
         })
       })
     },
-    handleReset() {
-      resetPassword(null).then(res => {
-        if(res.data.code === 0) {
-          this.$message({
-            type: 'success',
-            message: '重置密码成功'
-          })
-        }
+    handleReset() { // 重置密码
+      this.$confirm('是否重置密码为123abc?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: 'true'
+      }).then((res) => {
+        resetPassword(null).then(res => {
+          if(res.data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '重置密码成功'
+            })
+          }
+          this.$router.push({ path: '/employee' })
+        })
+      }).catch((res) => {
+        this.$message({
+          type: 'info',
+          message: '取消重置密码'
+        })
+        this.$router.push({ path: '/employee' })
       })
-    },
-    handleUpdate () {
-      this.$router.push({path:'/updatePwd'})
-    },
+    }
   }
 }
 </script>
