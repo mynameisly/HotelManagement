@@ -93,8 +93,7 @@ export default {
   },
   methods: {
     handlePageChange(item) {
-      // console.log(item);// currentPage=1  pageSize=30条
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getPositionList(para);
     },
     getPositionList(param) {

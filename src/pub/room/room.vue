@@ -116,7 +116,7 @@
         direction="rtl"
         size="50%">
           <div v-for="(img, index) in roomData.imgList" :key="index">
-            <img :src="img">
+            <img :src="img" alt="图片暂时无法找到">
           </div>
       </el-drawer>
     </el-table>
@@ -211,7 +211,7 @@ export default {
     },
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getroomList(para);
     },
     getroomList(param) {

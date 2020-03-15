@@ -119,17 +119,18 @@ export default {
   },
   methods: {
     handlePageChange(item) {
-      // console.log(item);// currentPage=1  pageSize=30条
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      console.log(item);// currentPage=1  pageSize=30条
+      // const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getempList(para);
     },
-    getempList(param) {
-      getempList(param).then(res => {
+    getempList(params) {
+      getempList(params).then(res => {
         this.page.currentPage = res.data.page.page
         this.page.pageSize = res.data.page.limit
         this.page.totalPage = res.data.page.totalPages
         this.page.totalSize = res.data.page.totalRows
-        // console.log('返回的数据是',res.data)
+        console.log('返回的数据是',res.data)
         // console.log(res.data.data)
         if (res.data.code === 3) {
           this.$message({

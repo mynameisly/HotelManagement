@@ -12,14 +12,10 @@
             <el-input v-model="searchForm.tenantInfo" placeholder="请输入住客信息" clearable/>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <el-form-item label="最低房价：" prop="startMoney">
-            <el-input v-model="searchForm.startMoney" placeholder="请输入最低房价" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="最高房价：" prop="endMoney">
-            <el-input v-model="searchForm.endMoney" placeholder="请输入最高房价" clearable/>
+        <el-col :span="12">
+          <el-form-item label="房费：" prop="startMoney">
+            <el-input v-model="searchForm.startMoney" placeholder="最低房费" clearable style="width:48%"/>-
+            <el-input v-model="searchForm.endMoney" placeholder="最高房费" clearable style="width:48%"/>
           </el-form-item>
         </el-col>
       </el-row>
@@ -62,7 +58,6 @@
       element-loading-text="拼命加载中"
       @cell-mouse-enter="mouseEnter"
         >
-      <el-table-column type="selection" align="center" />
        <el-table-column label="序号" type="index" width="55">
         <template slot-scope="scope">
           <!-- (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1  -->
@@ -126,11 +121,15 @@ export default {
   },
   methods: {
     handlePageChange(item) {
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getCheckoutList(para);
     },
     getCheckoutList(param) {
       getCheckoutList(param).then(res => {
+        this.page.currentPage = res.data.page.page
+        this.page.pageSize = res.data.page.limit
+        this.page.totalPage = res.data.page.totalPages
+        this.page.totalSize = res.data.page.totalRows
         console.log('退房记录返回的数据是',res.data)
         this.CheckoutList = res.data.data
         this.loading = false;

@@ -1,7 +1,7 @@
 <template>
   <div id="roomtypeAdd">
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form ref="roomtypeForm" :model="item" :rules="rules" label-width="100px">
+      <el-form ref="roomtypeForm" :model="item" :rules="rules" label-width="120px">
         <el-form-item label="客房类型：" prop="roomTypeName">
           <el-select v-model="item.roomTypeName" placeholder="请选择客房类型" clearable>
             <el-option
@@ -21,11 +21,8 @@
         <el-form-item label="面积：" prop="area">
           <el-input v-model="item.area" placeholder="请输入面积" clearable/>
         </el-form-item>
-        <el-form-item label="是否有窗:" prop="window">
-          <el-radio-group v-model="item.window">
-            <el-radio v-model="item.window" label="有窗" border>有窗</el-radio>
-            <el-radio v-model="item.window" label="无窗" border>无窗</el-radio>
-          </el-radio-group>
+        <el-form-item label="价格：" prop="price">
+          <el-input v-model="item.price" placeholder="请输入价格" clearable/>
         </el-form-item>
         <el-form-item label="床型：" prop="bedType">
           <el-select v-model="item.bedType" placeholder="请选择床型" clearable>
@@ -37,20 +34,23 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="是否有窗:" prop="window">
+          <el-radio-group v-model="item.window">
+            <el-radio v-model="item.window" label="有窗" border>有窗</el-radio>
+            <el-radio v-model="item.window" label="无窗" border>无窗</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="是否可加床："  prop="jiaChuang">
+          <el-select v-model="item.jiaChuang" placeholder="是否可加床" clearable>
+            <el-option key="1" label="可加床（1.8米大床，50/天）" value="可加床（1.8米大床，50/天）"></el-option>
+            <el-option key="2" label="不可加床" value="不可加床"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="床型具体说明：" prop="bedDetail">
           <el-input type="textarea" :rows="2" v-model="item.bedDetail" resize="none" maxlength="200" show-word-limit palceholder="床型具体说明"></el-input>
         </el-form-item>
         <el-form-item label="房间设施说明：" prop="facilities">
           <el-input type="textarea" :rows="2" v-model="item.facilities" resize="none" maxlength="200" show-word-limit palceholder="房间设施说明"></el-input>
-        </el-form-item>
-          <el-form-item label="是否可加床："  prop="jiaChuang">
-            <el-select v-model="item.jiaChuang" placeholder="是否可加床" clearable>
-              <el-option key="1" label="可加床（1.8米大床，50/天）" value="可加床（1.8米大床，50/天）"></el-option>
-              <el-option key="2" label="不可加床" value="不可加床"></el-option>
-            </el-select>
-          </el-form-item>
-        <el-form-item label="价格：" prop="price">
-          <el-input v-model="item.price" placeholder="请输入价格" clearable/>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -135,8 +135,8 @@ export default {
       console.log('进入到根据ID查询客房类型')
       getRoomTypeById(id).then(res => {
         console.log('根据ID查询客房类型返回数据是，', res)
-        if(res.code === 0){
-          this.item = item
+        if(res.data.code === 0){
+          this.item = res.data.data
         }
       })
     },
@@ -209,8 +209,6 @@ export default {
         this.$refs.roomtypeForm.clearValidate()
       })
       this.item = {}
-      this.fileFlag = false;
-      this.fileUploadPercent = 0
       this.visible = false
     }
   }

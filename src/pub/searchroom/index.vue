@@ -147,7 +147,7 @@ export default {
   },
   methods: {
     handlePageChange(item) {
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getroomList(para);
     },
     mouseEnter (data) {
