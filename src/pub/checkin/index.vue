@@ -14,7 +14,14 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="床型：" prop="bedType">
-            <el-input v-model="searchForm.bedType" placeholder="请输入床型" clearable/>
+            <el-select v-model="searchForm.bedType" placeholder="请选择床型" clearable>
+              <el-option
+                v-for="i in bedTypeList"
+                :key="i.categoryId"
+                :label="i.categoryName"
+                :value="i.categoryName">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -54,7 +61,7 @@
     </el-form>
     <el-table
       border
-      height="370"
+      height="380"
       :data="checkinList"
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -114,6 +121,7 @@ import UpdateDialog from './updateDialog'
 import UpdateRoom from './updateroom'
 import { getCheckinList,addCheckin,updateCheckin,updateRoom } from '@/api/checkin';
 import { addCheckout } from '@/api/checkout';
+import { getCategoryList } from '@/api/category'
 import PageComponent from '@/components/Pagenation/index'
 import { formateDate } from '@/utils/formateDate';
 export default {
@@ -138,6 +146,7 @@ export default {
       },
       checkinList: [],
       checkinData: {},
+      bedTypeList: [],
       page: {
         currentPage: 0, // 当前页，对应接口中的page
         pageSize: 0, // 每页条数，对应接口中的limit
@@ -148,12 +157,20 @@ export default {
   },
   mounted () {
     this.getCheckinList(null);
+    this.getCategoryList()
   },
   methods: {
     formateDate,
     handlePageChange(item) {
       const para = { page: item.currentPage, limit: item.pageSize };
       this.getCheckinList(para);
+    },
+    getCategoryList() {
+      getCategoryList({type:'床型'}).then(res => {
+        if(res.data.code === 0){
+          this.bedTypeList = res.data.data
+        }
+      })
     },
     getCheckinList(param) {
       if (this.searchForm.createTimeRange == null || this.searchForm.createTimeRange == '') {
@@ -163,16 +180,21 @@ export default {
         this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
         this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
       }
-      this.searchForm.createTimeRange = ''
+      delete this.searchForm.createTimeRange
       console.log('查询蚕食是param',this.searchForm)
       getCheckinList(param).then(res => {
-        this.page.currentPage = res.data.page.page
-        this.page.pageSize = res.data.page.limit
-        this.page.totalPage = res.data.page.totalPages
-        this.page.totalSize = res.data.page.totalRows
-        console.log('返回的数据是',res.data)
-        this.checkinList = res.data.data
-        this.loading = false;
+        if (res.data.code == 0) {
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          console.log('返回的数据是',res.data)
+          this.checkinList = res.data.data
+          this.loading = false;
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
       })
     },
     mouseEnter (data) {
@@ -180,16 +202,19 @@ export default {
     },
     addcheckin (item) { // 新增的住客不止一个，可能有多个人，这种写法不行
       console.log('新增入住通知', item)
+      let tenantsArr = item.moreNotifyObject
+      let tenantsArrChild = {
+        "tenantIdCard": item.tenantIdCard,
+        "tenantName": item.tenantName,
+        "tenantSex": item.tenantSex,
+        "tenantTel": item.tenantTel
+      }
+      tenantsArr.push(tenantsArrChild)
       const param = {
         "checkinDay": item.checkinDay,
         "errorInfo": {},
         "roomId": item.roomId,
-        "tenants": [{
-          "tenantIdCard": item.tenantIdCard,
-          "tenantName": item.tenantName,
-          "tenantSex": item.tenantSex,
-          "tenantTel": item.tenantTel
-        }]
+        "tenants": tenantsArr
       }
       console.log('param', param)
       const headers = { 'Content-type': 'application/json;charset=utf-8'}

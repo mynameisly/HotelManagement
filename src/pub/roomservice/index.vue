@@ -55,7 +55,7 @@
     <!-- el-table中的height用于固定表头 -->
     <el-table
       border
-      height="400"
+      height="380"
       :data="serviceList"
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -179,6 +179,9 @@ export default {
         this.page.totalSize = res.data.page.totalRows
         if(res.data.code == 0){
           this.serviceList = res.data.data
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
         }
         this.loading = false;
       })
