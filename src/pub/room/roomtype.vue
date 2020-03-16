@@ -2,71 +2,62 @@
   <div id="roomtype">
     <el-form v-model="searchForm" :inline="true">
       <el-row>
-        <el-col :span="6" :offset="1">
-          <el-form-item label="房号：">
-            <el-input v-model="searchForm.number" placeholder="请输入房号" clearable/>
+        <el-col :span="6">
+          <el-form-item label="客房类型：" prop="roomType">
+            <el-select v-model="searchForm.roomTypeName" placeholder="请选择客房类型" clearable>
+              <el-option
+                v-for="item in roomTypeLists"
+                :key="item.roomTypeId"
+                :label="item.roomTypeName"
+                :value="item.roomTypeName">
+              </el-option>
+            </el-select> 
           </el-form-item>
         </el-col>
-        <el-col :span="7">
-          <el-form-item label="客房类型：">
-            <el-input v-model="searchForm.roomType" placeholder="请输入客房类型" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="7">
+        <el-col :span="6">
           <el-form-item label="可住人数：">
             <el-input v-model="searchForm.peopleNum" placeholder="请输入可住人数" clearable/>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="6" :offset="1">
+        <el-col :span="6">
           <el-form-item label="楼层：">
             <el-input v-model="searchForm.floor" placeholder="请输入楼层" clearable/>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <el-form-item label="床型：">
-            <el-input v-model="searchForm.bedType" placeholder="请输入床型" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-            <el-form-item>
-                <el-select v-model="searchForm.state" placeholder="请输入状态" clearable>
-                    <el-option key="2" label="空闲" value="空闲"></el-option>
-                    <el-option key="2" label="在住" value="在住"></el-option>
-                    <el-option key="1" label="不可用" value="不可用"></el-option>
-                    <el-option key="2" label="正在打扫" value="正在打扫"></el-option>
-                </el-select>
-            </el-form-item>
-        </el-col>
       </el-row>
       <el-row>
-        <el-col :span="6" :offset="1">
-          <el-form-item label="最低价：">
-            <el-input v-model="searchForm.startPrice" placeholder="请输入最低价" clearable/>
+        <el-col :span="6">
+          <el-form-item label="床型：">
+            <el-select v-model="searchForm.bedType" placeholder="请选择床型" clearable>
+              <el-option
+                v-for="i in bedTypeList"
+                :key="i.categoryId"
+                :label="i.categoryName"
+                :value="i.categoryName">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="10">
+          <el-form-item label="房费：" prop="startMoney">
+            <el-input v-model="searchForm.startPrice" placeholder="最低房费" clearable style="width:48%"/>-
+            <el-input v-model="searchForm.endPrice" placeholder="最高房费" clearable style="width:48%"/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="最高价：">
-            <el-input v-model="searchForm.endPrice" placeholder="请输入最高价" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="getRoomTypeList(searchForm)">查询</el-button>
-                <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
-            </el-form-item>
+          <el-button type="primary" icon="el-icon-search" @click="getRoomTypeList(searchForm)">查询</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>  
         </el-col>
       </el-row>
     </el-form>
     <el-table
       border
-      height="380"
+      height="330"
       :data="roomTypeList"
       v-loading="loading"
       element-loading-text="拼命加载中"
       @cell-mouse-enter="mouseEnter"
-        >
+      >
       <el-table-column label="序号" type="index" width="55">
         <template slot-scope="scope">
           <!-- (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1  -->
@@ -164,7 +155,8 @@
 import AddDialog from './addRoomType'
 import updateDialog from './addRoomType'
 import axios from 'axios'
-import { getRoomTypeList,addRoomType,updateRoomType,delRoomType } from '@/api/roomtype';
+import { getCategoryList } from '@/api/category'
+import { getAllRoomTypeList, getRoomTypeList,addRoomType,updateRoomType,delRoomType } from '@/api/roomtype';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -177,16 +169,16 @@ export default {
       loading: true,
       drawer: false,
       searchForm: {
-        number: '',
-        roomType: '',
+        roomTypeName: '',
         peopleNum: '',
         floor: '',
         bedType: '',
-        state: '',
         startPrice: '',
         endPrice: ''
       },
       roomTypeList: [],
+      bedTypeList: [],
+      roomTypeLists: [],
       roomTypeData: {},
       page: {
         currentPage: 0, // 当前页，对应接口中的page
@@ -198,22 +190,42 @@ export default {
   },
   mounted () {
     this.getRoomTypeList(null);
+    this.getAllRoomTypeList()
+    this.getCategoryList()
   },
   methods: {
+    getAllRoomTypeList() {
+      getAllRoomTypeList().then(res => {
+        if(res.data.code === 0){
+          this.roomTypeLists = res.data.data
+        }
+      })
+    },
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
       const para = { page: item.currentPage, limit: item.pageSize };
       this.getRoomTypeList(para);
     },
+    getCategoryList() {
+      getCategoryList({type:'床型'}).then(res => {
+        if(res.data.code === 0){
+          this.bedTypeList = res.data.data
+        }
+      })
+    },
     getRoomTypeList(param) {
       getRoomTypeList(param).then(res => {
-        // console.log('返回的客房类型数据是',res.data)
-        this.page.currentPage = res.data.page.page
-        this.page.pageSize = res.data.page.limit
-        this.page.totalPage = res.data.page.totalPages
-        this.page.totalSize = res.data.page.totalRows
-        this.roomTypeList = res.data.data
-        this.loading = false;
+        if (res.data.code === 0){
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          this.roomTypeList = res.data.data
+          this.loading = false;
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
       })
     },
     mouseEnter (data) { // 这个数据拿不到

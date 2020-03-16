@@ -47,9 +47,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="10">
-          <el-form-item label="房费：" prop="startMoney">
-            <el-input v-model="searchForm.startMoney" placeholder="最低房费" clearable style="width:48%"/>-
-            <el-input v-model="searchForm.endMoney" placeholder="最高房费" clearable style="width:48%"/>
+          <el-form-item label="房费：" prop="startPrice">
+            <el-input v-model="searchForm.startPrice" placeholder="最低房费" clearable style="width:48%"/>-
+            <el-input v-model="searchForm.endPrice" placeholder="最高房费" clearable style="width:48%"/>
           </el-form-item>
         </el-col>
         <el-col :span="2">
@@ -155,12 +155,17 @@ export default {
     },
     getroomList(param) {
       getroomList(param).then(res => {
-        this.page.currentPage = res.data.page.page
-        this.page.pageSize = res.data.page.limit
-        this.page.totalPage = res.data.page.totalPages
-        this.page.totalSize = res.data.page.totalRows
-        this.roomList = res.data.data
-        this.loading = false;
+        if (res.data.code === 0){
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          this.roomList = res.data.data
+          this.loading = false;
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
       })
     },
     getAllRoomTypeList() {

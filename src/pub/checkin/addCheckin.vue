@@ -1,51 +1,92 @@
 <template>
   <div id="checkinAdd">
-    <el-dialog :title="title" :visible.sync="visible" top="6rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
-      <el-form ref="checkinForm" :model="item" :rules="rules" label-width="100px">
-        <el-form-item label="姓名:" prop="tenantName">
-          <el-input v-model="item.tenantName"  palceholder="请输入姓名" clearable/>
-        </el-form-item>
-        <el-form-item label="房号:" prop="roomId">
-          <el-select v-model="item.roomId" placeholder="请选择房号" @focus='handleNoRepeat' clearable>
-            <el-option
-              v-for="item in roomList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <!-- <el-form-item label="身份证:" prop="tenantIdCard">
-          <el-input v-model="item.tenantIdCard"  palceholder="请输入房客身份证" clearable/>
-        </el-form-item> -->
-        <el-form-item
-          v-for="(domain, index) in item.tenantIdCard"
-          :label="'身份证号' + index"
-          :key="domain.key"
-          :prop="'tenantIdCard.' + index + '.value'"
-          :rules="
-          [{ required: true, message: '请输入身份证号', trigger: 'blur' },
-          { validator: cheackCard, trigger: 'blur' }]
-          "
-        >
-          <el-input v-model="domain.value"></el-input>
-          <el-button @click.prevent="removeDomain(domain)">删除</el-button>
-        </el-form-item>
-        <el-form-item label="联系电话:" prop="tenantTel">
-          <el-input v-model="item.tenantTel"  palceholder="请输入联系电话" clearable/>
-        </el-form-item>
-        <el-form-item label="性别:" prop="tenantSex">
-          <el-radio-group v-model="item.tenantSex">
-           <el-radio v-model="item.tenantSex" label="男" border>男</el-radio>
-          <el-radio v-model="item.tenantSex" label="女" border>女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="入住天数:" prop="checkinDay">
-          <el-input v-model="item.checkinDay"  palceholder="请输入入住天数" clearable/>
+    <el-dialog :title="title" :visible.sync="visible" top="6rem" width="70%" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
+      <el-form ref="checkinForm" :model="checkinForm" :rules="rules" label-width="100px">
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="房号:" prop="roomId">
+              <el-select v-model="checkinForm.roomId" placeholder="请选择房号" @focus='handleNoRepeat' clearable>
+                <el-option
+                  v-for="item in roomList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="入住天数:" prop="checkinDay">
+              <el-input v-model="checkinForm.checkinDay"  placeholder="请输入入住天数" clearable/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- 先写死三个 -->
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="姓名:" prop="tenantName">
+              <el-input v-model="checkinForm.tenantName" placeholder="请输入姓名" clearable/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="身份证:" prop="tenantIdCard">
+              <el-input v-model="checkinForm.tenantIdCard"  placeholder="请输入身份证" clearable/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="联系电话:" prop="tenantTel">
+              <el-input v-model="checkinForm.tenantTel"  placeholder="请输入联系电话" clearable/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="性别:" prop="tenantSex">
+              <el-radio-group v-model="checkinForm.tenantSex">
+              <el-radio v-model="checkinForm.tenantSex" label="男" border>男</el-radio>
+              <el-radio v-model="checkinForm.tenantSex" label="女" border>女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- 动态生成 -->
+        <div class="moreRules">
+          <div class="moreRulesIn" v-for="(item, index) in checkinForm.moreNotifyObject" :key="item.key" >
+            <el-row>
+              <el-col :span="10">
+                <el-form-item label="姓名:" :prop="'moreNotifyObject.' + index +'.tenantName'" :rules="[{required: true, message: '请完善信息'}]">
+                  <el-input v-model="item.tenantName" placeholder="请输入姓名" clearable/>
+                </el-form-item>
+              </el-col>
+              <el-col :span="10">
+                <el-form-item label="身份证:" :prop="'moreNotifyObject.' + index +'.tenantIdCard'" :rules="[{required: true, message: '请完善信息'}]">
+                  <el-input v-model="item.tenantIdCard" placeholder="请输入身份证" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="10">
+                <el-form-item label="联系电话:" :prop="'moreNotifyObject.'+ index +'.tenantTel'" :rules="[{required: true, message: '请完善信息'}]">
+                  <el-input v-model="item.tenantTel" placeholder="请输入联系电话" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="10">
+                <el-form-item label="性别:" :prop="'moreNotifyObject.' + index + '.tenantSex'" :rules="[{required: true, message: '请完善信息'}]">
+                  <el-radio-group v-model="item.tenantSex">
+                  <el-radio v-model="item.tenantSex" label="男" border>男</el-radio>
+                  <el-radio v-model="item.tenantSex" label="女" border>女</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-button type="text" @click="deleteRules(item, index)" ><i class="el-icon-remove-outline">删除</i></el-button>
+            </el-row>
+          </div>
+        </div>
+        <el-form-item>
+          <el-button type="text" class="addUser" @click="addUser"><i class="el-icon-circle-plus-outline">添加房客</i></el-button>
         </el-form-item>
       </el-form>
       <span slot="footer">
-          <el-button type="primary" @click="addDomain">新增住客</el-button>
         <el-button type="primary" @click="resetForm('checkinForm')">取消</el-button>
         <el-button type="primary" @click="submitForm('checkinForm')">提交</el-button>
       </span>
@@ -73,23 +114,28 @@ export default {
           value.substring(10, 12) +
           "-" +
           value.substring(12, 14);
-        this.$set(this.item, "birthday", birth); // 动态添加
+        this.$set(this.checkinForm, "birthday", birth); // 动态添加
       }
     };
     return {
+      // 参考新增el-form选项 https://segmentfault.com/a/1190000019815654?utm_source=tag-newest
       visible: false,
       firstRoomList: [],
       roomList: [],// 保存房号和roomId
-      item: {
+      checkinForm: {
+        type: 2,
         checkinDay: '',
         roomId: '',
-        tenantName: '',
-        tenantTel: '',
+        // tenantName: '',
+        // tenantTel: '',
         // tenantIdCard: '',
-        tenantSex: '',
-        tenantIdCard: [{
-          value: ''
-        }],
+        // tenantSex: '',
+        moreNotifyObject:[{
+          tenantName: '',
+          tenantIdCard:'',
+          tenantTel:'',
+          tenantSex:''
+        }]
       },
       rules: {
         checkinDay: [{ required: true, message: '请输入', trigger: 'blur' }],
@@ -103,10 +149,10 @@ export default {
             trigger: "blur"
           }
           ],
-        // tenantIdCard: [
-        //   { required: true, message: "请输入身份证号", trigger: "blur" },
-        //   { validator: cheackCard, trigger: "blur" }
-        //   ],
+        tenantIdCard: [
+          { required: true, message: "请输入身份证号", trigger: "blur" },
+          { validator: cheackCard, trigger: "blur" }
+          ],
         tenantSex: [{ required: true, message: '请选择', trigger: 'change' }],
       }
     }
@@ -118,9 +164,9 @@ export default {
     open (item) {
       this.visible = true
       if (item === null || item === undefined) {
-        this.item = {}
+        // this.checkinForm = {}
       } else {
-        this.item = item
+        this.checkinForm = item
       }
     },
     getroomList() {
@@ -128,7 +174,6 @@ export default {
         if(res.data.code == 0) {
           this.firstRoomList = res.data.data
           this.handleRoom(res.data.data)
-          // console.log('this.roomList返回的数据是',res.data.data)
         }
       })
     },
@@ -153,19 +198,19 @@ export default {
         roomList.push({label: objres[i].number, value: objres[i].roomId})
       }
       this.roomList = roomList
-      console.log('this.rooLisst', this.roomList)
     },
-    removeDomain(item) {
-      var index = this.item.tenantIdCard.indexOf(item)
+    addUser() {
+      this.checkinForm.moreNotifyObject.push({
+        tenantIdCard:'',
+        tenantTel:'',
+        tenantSex:''
+      })
+    },
+    deleteRules(item, index) {
+      this.index = this.checkinForm.moreNotifyObject.indexOf(item)
       if (index !== -1) {
-        this.item.tenantIdCard.splice(index, 1)
+        this.checkinForm.moreNotifyObject.splice(index, 1)
       }
-    },
-    addDomain() {
-      this.item.tenantIdCard.push({
-        value: '',
-        key: Date.now()
-      });
     },
     submitForm (checkinForm) {
       // this.$refs.checkinForm.validate(valid => {
@@ -177,7 +222,8 @@ export default {
             lockScroll: false,
             type: 'warning'
           }).then(() => {
-            this.$emit('confirmData', this.item)
+            console.log('新增的数据是',this.checkinForm)
+            this.$emit('confirmData', this.checkinForm)
             this.resetForm('checkinForm')
           })
         // }
@@ -187,13 +233,13 @@ export default {
       this.$nextTick(() => {
         this.$refs.checkinForm.clearValidate()
       })
-      this.item = {}
+      this.checkinForm = {}
       this.visible = false
     }
   }
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 
 </style>

@@ -52,7 +52,7 @@
     </el-form>
     <el-table
       border
-      height="370"
+      height="380"
       :data="CheckoutList"
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -126,13 +126,18 @@ export default {
     },
     getCheckoutList(param) {
       getCheckoutList(param).then(res => {
-        this.page.currentPage = res.data.page.page
-        this.page.pageSize = res.data.page.limit
-        this.page.totalPage = res.data.page.totalPages
-        this.page.totalSize = res.data.page.totalRows
-        console.log('退房记录返回的数据是',res.data)
-        this.CheckoutList = res.data.data
-        this.loading = false;
+        if (res.data.code === 0) {
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          console.log('退房记录返回的数据是',res.data)
+          this.CheckoutList = res.data.data
+          this.loading = false;
+        }else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
       })
     },
     mouseEnter (data) {

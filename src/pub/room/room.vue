@@ -9,15 +9,15 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="客房类型：" prop="roomType">
-          <el-select v-model="searchForm.roomType" placeholder="请选择客房类型" clearable>
-            <el-option
-              v-for="item in roomTypeList"
-              :key="item.roomTypeId"
-              :label="item.roomTypeName"
-              :value="item.roomTypeName">
-            </el-option>
-          </el-select> 
-        </el-form-item>
+            <el-select v-model="searchForm.roomType" placeholder="请选择客房类型" clearable>
+              <el-option
+                v-for="item in roomTypeList"
+                :key="item.roomTypeId"
+                :label="item.roomTypeName"
+                :value="item.roomTypeName">
+              </el-option>
+            </el-select> 
+          </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-form-item label="可住人数：">
@@ -33,16 +33,23 @@
       <el-row>
         <el-col :span="6">
           <el-form-item label="床型：">
-            <el-input v-model="searchForm.bedType" placeholder="请输入床型" clearable/>
+            <el-select v-model="searchForm.bedType" placeholder="请选择床型" clearable>
+              <el-option
+                v-for="i in bedTypeList"
+                :key="i.categoryId"
+                :label="i.categoryName"
+                :value="i.categoryName">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-form-item label="客房状态：">
-            <el-select v-model="searchForm.state" placeholder="请输入客房状态" clearable>
-              <el-option key="2" label="空闲" value="空闲"></el-option>
+            <el-select v-model="searchForm.state" placeholder="请选择客房状态" clearable>
+              <el-option key="1" label="空闲" value="空闲"></el-option>
               <el-option key="2" label="在住" value="在住"></el-option>
-              <el-option key="1" label="不可用" value="不可用"></el-option>
-              <el-option key="2" label="正在打扫" value="正在打扫"></el-option>
+              <el-option key="3" label="不可用" value="不可用"></el-option>
+              <el-option key="4" label="正在打扫" value="正在打扫"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -53,18 +60,12 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="6">
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getroomList(searchForm)">查询</el-button>
-            <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-button type="primary" icon="el-icon-search" @click="getroomList(searchForm)">查询</el-button>
+      <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
     </el-form>
     <el-table
       border
-      height="380"
+      height="300"
       :data="roomList"
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -169,6 +170,7 @@ import updateDialog from './addroom'
 import axios from 'axios'
 import { getroomList,addroom,updateroom,delroom } from '@/api/room';
 import { getAllRoomTypeList } from '@/api/roomtype'
+import { getCategoryList } from '@/api/category'
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -191,6 +193,7 @@ export default {
         endPrice: ''
       },
       roomList: [],
+      bedTypeList: [],
       roomTypeList: [], // 客房类型
       roomData: '', // 保存该条数据的roomId
       page: {
@@ -204,6 +207,7 @@ export default {
   mounted () {
     this.getroomList(null);
     this.getAllRoomTypeList()
+    this.getCategoryList()
   },
   methods: {
     mouseEnter (data) {
@@ -214,15 +218,27 @@ export default {
       const para = { page: item.currentPage, limit: item.pageSize };
       this.getroomList(para);
     },
+    getCategoryList() {
+      getCategoryList({type:'床型'}).then(res => {
+        if(res.data.code === 0){
+          this.bedTypeList = res.data.data
+        }
+      })
+    },
     getroomList(param) {
       getroomList(param).then(res => {
-        this.page.currentPage = res.data.page.page
-        this.page.pageSize = res.data.page.limit
-        this.page.totalPage = res.data.page.totalPages
-        this.page.totalSize = res.data.page.totalRows
-        // console.log('返回的客房类型数据是',res.data)
-        this.roomList = res.data.data
-        this.loading = false;
+        if (res.data.code === 0){
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          // console.log('返回的客房类型数据是',res.data)
+          this.roomList = res.data.data
+          this.loading = false;
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
       })
     },
     getAllRoomTypeList() {

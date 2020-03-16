@@ -21,6 +21,17 @@
         <el-form-item label="可住人数：" prop="peopleNum">
           <el-input v-model="item.peopleNum" placeholder="请输入可住人数" clearable/>
         </el-form-item>
+        <el-form-item label="客房状态：" prop="state">
+          <el-input v-model="item.state" placeholder="请输入客房状态" clearable/>
+        </el-form-item>
+        <el-form-item label="客房状态：">
+          <el-select v-model="item.state" placeholder="请选择客房状态" clearable>
+            <el-option key="1" label="空闲" value="空闲"></el-option>
+            <el-option key="2" label="在住" value="在住"></el-option>
+            <el-option key="3" label="不可用" value="不可用"></el-option>
+            <el-option key="4" label="正在打扫" value="正在打扫"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="楼层：" prop="floor">
           <el-input v-model="item.floor" placeholder="请输入楼层" clearable/>
         </el-form-item>
