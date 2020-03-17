@@ -119,7 +119,7 @@ export default {
   },
   methods: {
     handlePageChange(item) {
-      console.log(item);// currentPage=1  pageSize=30条
+      // console.log(item);// currentPage=1  pageSize=30条
       // const para = { currentPage: item.currentPage, pageSize: item.pageSize };
       const para = { page: item.currentPage, limit: item.pageSize };
       this.getempList(para);
@@ -130,7 +130,7 @@ export default {
         this.page.pageSize = res.data.page.limit
         this.page.totalPage = res.data.page.totalPages
         this.page.totalSize = res.data.page.totalRows
-        console.log('返回的数据是',res.data)
+        // console.log('返回的数据是',res.data)
         // console.log(res.data.data)
         if (res.data.code === 3) {
           this.$message({
@@ -146,13 +146,14 @@ export default {
       this.empData = Object.assign({}, data)
     },
     addemp (item) {
-      // console.log('新增员工', item)
+      // console.log('新增员工参数', item)
       const param = {
         number: item.number,
         readName: item.readName,
         positionId: item.position,
         telPhone: item.telPhone,
-        sex: item.sex
+        sex: item.sex,
+        headImg: item.headImg
       }
       addemp(param).then(res => {
         if (res.data.code === 0) {
