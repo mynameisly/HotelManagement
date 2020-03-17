@@ -145,7 +145,7 @@
         </el-card>
       </el-col>
     </el-row> -->
-    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addroomtype(item)"/>
+    <add-dialog ref="addDialog" title="新增"  @confirmData="(item,fileList) => addroomtype(item,fileList)"/>
     <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroomtype(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
@@ -231,8 +231,13 @@ export default {
     mouseEnter (data) { // 这个数据拿不到
       this.roomTypeData = Object.assign({}, data)
     },
-    addroomtype (item) {
-      console.log('新增客房类型', item)
+    addroomtype (item,fileList) {
+      let imgUrls = []
+      for (let i = 0; i < fileList.length; i++){
+        imgUrls.push(fileList[i].url)
+      }
+      item.imgUrls = imgUrls.join()
+      // console.log('canshu', item)
       addRoomType(item).then(res => {
         console.log('新增客房返回数据是', res)
         if(res.data.code == 0) {
@@ -241,6 +246,11 @@ export default {
             message: '新增客房类型成功'
           })
           this.getRoomTypeList()
+        } else if(res.data.code == 0) {
+          this.$message({
+            type: 'info',
+            message: res.data.data
+          })
         }
       })
     },

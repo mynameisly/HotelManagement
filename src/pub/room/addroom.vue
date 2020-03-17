@@ -21,9 +21,6 @@
         <el-form-item label="可住人数：" prop="peopleNum">
           <el-input v-model="item.peopleNum" placeholder="请输入可住人数" clearable/>
         </el-form-item>
-        <el-form-item label="客房状态：" prop="state">
-          <el-input v-model="item.state" placeholder="请输入客房状态" clearable/>
-        </el-form-item>
         <el-form-item label="客房状态：">
           <el-select v-model="item.state" placeholder="请选择客房状态" clearable>
             <el-option key="1" label="空闲" value="空闲"></el-option>
@@ -68,16 +65,16 @@
         </el-form-item>
         <el-form-item label="图片" prop="imgUrls" >
           <el-upload
-            class="avatar-uploader"
+            class="upload-demo"
             action=""
-            :data="uptoken"
-            :show-file-list="false"
-            :on-change="onchange"
-            :before-upload="beforeupload"
-          >
-            <img v-if="item.imgUrls" :src="item.imgUrls" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            :limit="4"
+            :before-upload="beforeUpload"
+            list-type="picture">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -90,10 +87,10 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { getCategoryList } from '@/api/category'
 import { getAllRoomTypeList } from '@/api/roomtype'
 import { getroomById } from '@/api/room'
+import { uploadFile } from '@/api/uploadFile'
 export default {
   props: {
     title: String,
@@ -104,6 +101,9 @@ export default {
       visible: false,
       roomTypeList: [], // 客房类型
       bedTypeList: [],// 保存床型
+      fileList: [
+        // {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
+      ],
       item: {
         number: '',
         peopleNum: '',
@@ -152,7 +152,7 @@ export default {
     },
     getCategoryList() {
       getCategoryList({type:'床型'}).then(res => {
-        console.log('搜索床型结果是',res)
+        // console.log('搜索床型结果是',res)
         if(res.data.code === 0){
           this.bedTypeList = res.data.data
         }
@@ -180,54 +180,28 @@ export default {
     formatTen (num) {
       return num > 9 ? (num + '') : ('0' + num)
     },
-    beforeupload (file) { // 上传文件之前限制格式和大小
-      let fileFormat = file.name.substring(file.name.lastIndexOf('.') + 1) // 获取上传的文件的格式
-      const extension1 = fileFormat === 'doc'
-      const extension2 = fileFormat === 'docx'
-      const extension3 = fileFormat === 'txt'
-      const extension4 = fileFormat === 'xlsx'
-      const extension5 = fileFormat === 'ppt'
-      if (!extension1 && !extension2 && !extension3 && !extension4 && !extension5) {
-        this.$message({
-          type: 'danger',
-          message: '附件只能是doc,docx,txt,xlsx,ppt格式'
-        })
-      }
-      const isLt10M = file.size / 1024 / 1024  < 10;
-      if (!isLt10M) {
-        this.$message.error('附件大小不能超过 10MB!')
-        return false
-      }
-      this.fileList.push(file)
-      let myFiles = [...this.fileList]
-      // 遍历数组
-      myFiles.forEach((f, index) => {
-        this.param.append('multipartFiles', f)
-      })
-      return extension1 || extension2 || extension3 || extension4 || extension5 && isLt10M
-    },
-    uploadFileProcess(event, file, fileList) {
-      this.fileFlag = true;
-      this.fileUploadPercent = Math.floor(event.percent)
-    },
-    onchange (file) { // 当上传图片后，调用onchange方法，获取图片本地路径
-      this.param = new FormData()
-      this.param.append('type', 'learningResource')
-      let config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+    beforeUpload(file) {
+      console.log('file信息是',file)
+      let files = new FormData();
+      files.append('multipartFile',file)
+      let headers = {'Content-Type': 'multipart/form-data'}
+      uploadFile(files,headers).then((res) => {
+        console.log('文件上传返回数据',res.data.data)
+        if (res.data.code === 0){
+          let fileChild = {
+            name: file.name,
+            url: res.data.data
+          }
+          this.fileList.push(fileChild)
         }
-      }
-      axios({
-        method: 'post',
-        url: '/json/file/add',
-        headers: config,
-        data: this.param
-      }).then((res) => {
-        console.log('通过url接口得到视频url')
-        this.item.fileId = res.data.data[0].fileId
-        console.log(this.item.fileId)
-      }).catch(() => false)
+      })
+      // console.log('this.fileList',this.fileList)
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
     },
     submitForm (roomForm) {
       this.$refs.roomForm.validate(valid => {
@@ -238,7 +212,7 @@ export default {
             lockScroll: false,
             type: 'warning'
           }).then(() => {
-            this.$emit('confirmData', this.item)
+            this.$emit('confirmData', this.item, this.fileList)
             this.resetForm('roomForm')
           })
         }

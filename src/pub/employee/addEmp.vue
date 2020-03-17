@@ -33,18 +33,15 @@
         <el-form-item label="联系电话:" prop="telPhone">
           <el-input v-model="item.telPhone"  palceholder="请输入联系电话" clearable/>        
         </el-form-item>
-         <el-form-item label="头像:" prop="headImg" >
-          <el-upload
+        <el-form-item label="用户头像:">
+         <el-upload
             class="avatar-uploader"
             action=""
-            :data="uptoken"
             :show-file-list="false"
-            :on-change="onchange"
-            :before-upload="beforeAvatarUpload"
-          >
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
             <img v-if="item.headImg" :src="item.headImg" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item label="备注:">
@@ -60,7 +57,7 @@
 </template>
 
 <script>
-// import { uploadFile } from '@/api/uploadFile'
+import { uploadFile } from '@/api/uploadFile'
 import axios from 'axios'
 import { getPositionList } from '@/api/position';
 export default {
@@ -89,9 +86,6 @@ export default {
         key: ''
       },
       positionList: [], // 保存职位信息
-      param: '', // 表单要提交的参数
-      fileFlag: false,
-      fileUploadPercent: 0,
       fileList: [],
       item: {
         number: '',
@@ -117,7 +111,7 @@ export default {
     open (item) {
       this.visible = true
       if (item === null || item === undefined) {
-        this.item = {}
+        // this.item = {}
       } else {
         this.item = item
       }
@@ -135,8 +129,10 @@ export default {
     formatTen (num) {
       return num > 9 ? (num + '') : ('0' + num)
     },
-    beforeAvatarUpload (file) {
-      this.uptoken.key = file.name
+    handleAvatarSuccess(res, file) {
+      this.headImg = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg'
       const isPNG = file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -148,40 +144,17 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
 
-      console.log('上传前事件')
-      // 重新写一个表单上传的方法
-      // this.param = new FormData()
-      this.fileList.push(file) // 把单个文件变成数组
-      let images = [...this.fileList] // 把数组存储为一个参数，便于后期操作
-      // 遍历数组
-      images.forEach((img, index) => {
-        this.param.append('multipartFile', img) // 把单个图片重命名，存储起来（给后台）
-      })
-
-      return isJPG || isPNG && isLt2M
-    },
-    onchange (file) { // 当上传图片后，调用onchange方法，获取图片本地路径
-      this.param = new FormData()
-      let config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-      // 然后通过下面的方式把内容通过axios来传到后台
-      // uploadFile (param).then(res =>{
-      //   console.log('通过url接口得到图片url', res.data)
-      // })
-      // getempList(param).then(res => {
-        axios({
-          method: 'post',
-          url: '/HotelManagement/json/file/add',
-          headers: config,
-          data: this.param
-        }).then((res) => {
-          console.log('图片上传成功之后返回的图片的url',res.data) // 图片上传成功之后返回的图片的url
-          console.log('图片上传成功之后返回的图片的url',res.data.data)
+      // console.log('file信息是',file)
+      let files = new FormData();
+      files.append('multipartFile',file)
+      let headers = {'Content-Type': 'multipart/form-data'}
+      uploadFile(files,headers).then((res) => {
+        // console.log('文件上传返回数据',res.data.data)
+        if (res.data.code === 0){
           this.item.headImg = res.data.data
-        }).catch(() => false)
+        }
+      })
+      return isJPG || isPNG && isLt2M
     },
     getPositionList() {
       getPositionList(null).then(res => {
@@ -216,36 +189,62 @@ export default {
 }
 </script>
 
+// <style lang="less">
+// .avatar-uploader .el-upload {
+//   border: 1px dashed #d9d9d9;
+//   border-radius: 6px;
+//   cursor: pointer;
+//   // position: relative;
+//   // overflow: hidden;
+//   // text-align: left;
+//   width: 28%;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+// .avatar-uploader .el-upload:hover {
+//   border-color: #409eff;
+// }
+// .avatar-uploader-icon {
+//   font-size: 28px;
+//   color: #8c939d;
+//   width: 80px;
+//   height: 80px;
+//   line-height: 80px;
+//   text-align: center;
+// }
+// .el-upload__tip {
+//   margin-top: 0;
+// }
+// .avatar {
+//   width: 80px;
+//   height: 80px;
+//   display: block;
+// }
+// </style>
+
 <style lang="less">
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  // position: relative;
-  // overflow: hidden;
-  // text-align: left;
-  width: 28%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  text-align: center;
-}
-.el-upload__tip {
-  margin-top: 0;
-}
-.avatar {
-  width: 80px;
-  height: 80px;
-  display: block;
-}
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>

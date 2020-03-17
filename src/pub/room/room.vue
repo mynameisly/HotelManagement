@@ -158,7 +158,7 @@
         </el-card>
       </el-col>
     </el-row> -->
-    <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addroom(item)"/>
+    <add-dialog ref="addDialog" title="新增"  @confirmData="(item,fileList) => addroom(item,fileList)"/>
     <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroom(item)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
@@ -248,16 +248,27 @@ export default {
         }
       })
     },
-    addroom (item) {
-      console.log('新增客房类型', item)
+    addroom (item,fileList) {
+      let imgUrls = []
+      fileList.forEach((ele,idx) => {
+        imgUrls.push(ele.url)
+      })
+      console.log('imgUrls', imgUrls)
+      item.imgUrls = imgUrls.join()
+      console.log('canshu', item)
       addroom(item).then(res => {
-        console.log('新增客房返回数据是', res)
+        // console.log('新增客房返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
             message: '新增客房类型成功'
           })
           this.getroomList()
+        } else if(res.data.code == 0) {
+          this.$message({
+            type: 'info',
+            message: res.data.data
+          })
         }
       })
     },

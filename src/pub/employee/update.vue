@@ -32,14 +32,11 @@
           <el-upload
             class="avatar-uploader"
             action=""
-            :data="uptoken"
             :show-file-list="false"
-            :on-change="onchange"
-            :before-upload="beforeAvatarUpload"
-          >
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
             <img v-if="item.headImg" :src="item.headImg" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item label="出生日期:" prop="birthday">
@@ -139,9 +136,8 @@ export default {
       }
     },
     getEmployeeById() {
-      console.log()
       getEmployeeById(this.employeeId).then(res => {
-        console.log('该员工的信息是，',res)
+        // console.log('根据ID查询该员工的信息是，',res)
         if(res.data.code === 0) {
           this.item = res.data.data
           this.item.position = res.data.data.position.positionName
@@ -174,40 +170,18 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
 
-      console.log('上传前事件')
-      // 重新写一个表单上传的方法
-      // this.param = new FormData()
-      this.fileList.push(file) // 把单个文件变成数组
-      let images = [...this.fileList] // 把数组存储为一个参数，便于后期操作
-      // 遍历数组
-      images.forEach((img, index) => {
-        this.param.append('multipartFiles', img) // 把单个图片重命名，存储起来（给后台）
+      // console.log('file信息是',file)
+      let files = new FormData();
+      files.append('multipartFile',file)
+      let headers = {'Content-Type': 'multipart/form-data'}
+      uploadFile(files,headers).then((res) => {
+        // console.log('文件上传返回数据',res.data.data)
+        if (res.data.code === 0){
+          this.item.headImg = res.data.data
+        }
       })
 
       return isJPG || isPNG && isLt2M
-    },
-    onchange (file) { // 当上传图片后，调用onchange方法，获取图片本地路径
-      this.param = new FormData()
-      this.param.append('type', 'headImg')
-      let config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-      // 然后通过下面的方式把内容通过axios来传到后台
-      uploadFile (param).then(res =>{
-        console.log('通过url接口得到图片url', res.data)
-      })
-      // getempList(param).then(res => {
-      // axios({
-      //   method: 'post',
-      //   url: '/json/file/add',
-      //   headers: config,
-      //   data: this.param
-      // }).then((res) => {
-      //   console.log(res.data.data[0].previewUrl) // 图片上传成功之后返回的图片的url
-      //   this.item.headImg = res.data.data[0].previewUrl
-      // }).catch(() => false)
     },
     getPositionList() {
       getPositionList(null).then(res => {
@@ -223,7 +197,7 @@ export default {
             lockScroll: false,
             type: 'warning'
           }).then(() => {
-            console.log('修改的数据是，', this.item)
+            // console.log('修改的数据是，', this.item)
             this.$emit('confirmData', this.item)
             this.resetForm('empForm')
           })
