@@ -29,42 +29,54 @@
         >
       <el-table-column label="订单总量" prop="orderCount"/>
       <el-table-column label="总收入" prop="money"/>
-      <el-table-column label="趋势" prop="statList"/>
+      <!-- <el-table-column label="趋势" prop="statList"/> -->
     </el-table>
   </div>
 </template>
 
 <script>
 import { getfinList } from '@/api/finance';
+import { formateDate } from '@/utils/formateDate';
 export default {
   data () {
     return {
       loading: true,
       searchForm: {
-        createTimeRange: ''
+        createTimeRange: '',
+        statTime: '',
+        endTime: ''
       },
       finList: [],
-      finData: {},
       rules: {
         createTimeRange: [{ required: true, message: '请输入', trigger: 'blur' }],
       }
     }
   },
   mounted () {
-    this.getfinList(null);
+    // this.getfinList(null);
   },
   methods: {
-    getfinList(param) {
-      getfinList(param).then(res => {
-        console.log('财务返回的数据是',res.data)
-        if (res.data.code === 3) {
+    formateDate,
+    getfinList(searchForm) {
+      if (this.searchForm.createTimeRange == null || this.searchForm.createTimeRange == '') {
+        this.searchForm.statTime = ''
+        this.searchForm.endTime = ''
+      } else {
+        this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
+        this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
+      }
+      delete this.searchForm.createTimeRange
+      getfinList(searchForm).then(res => {
+        console.log('财务返回的数据是',res)
+        if (res.data.code === 0) {
+          this.finList = res.data.data
+          this.loading = false;
+        } else if (res.data.code === 3) {
           this.$message({
             type: 'error',
             message: res.data.msg
           })
         }
-        this.finList = res.data.data
-        this.loading = false;
       })
     }
   }
