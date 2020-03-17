@@ -142,7 +142,9 @@ export default {
         state: '',
         createTimeRange: '',
         startMoney: '',
-        endMoney: ''
+        endMoney: '',
+        statTime: '',
+        endTime: ''
       },
       checkinList: [],
       checkinData: {},
