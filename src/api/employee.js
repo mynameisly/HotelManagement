@@ -12,7 +12,7 @@ export const getEmployeeById = employeeId => { return request({ url: '/HotelMana
 export const update = params => { return request({ url: '/HotelManagement/json/employee/update', method: 'put', params: params }) }
 
 // 重置密码
-export const resetPassword = params => { return request({ url: '/HotelManagement/json/employee/resetPassword', method: 'put', params: params }) }
+export const resetPassword = employeeId => { return request({ url: '/HotelManagement/json/employee/resetPassword?employeeId=' + employeeId, method: 'put', params: employeeId }) }
 
 // 修改密码
 export const updatePassword = params => { return request({ url: '/HotelManagement/json/employee/updatePassword', method: 'put', params: params }) }
