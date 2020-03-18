@@ -23,7 +23,7 @@
         <el-col :span="10">
           <el-form-item label="入住时间：">
             <el-date-picker
-              v-model="searchForm.CheckinTimeRange"
+              v-model="checkinTimeRange"
               type="daterange"
               range-separator="-"
               start-placeholder="起始时间"
@@ -34,7 +34,7 @@
         <el-col :span="10">
           <el-form-item label="退房时间：">
             <el-date-picker
-              v-model="searchForm.checkoutTimeRange"
+              v-model="checkoutTimeRange"
               type="daterange"
               range-separator="-"
               start-placeholder="起始时间"
@@ -44,7 +44,7 @@
         </el-col>
         <el-col :span="4">
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getempList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="onSearch(searchForm)">查询</el-button>
             <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
           </el-form-item>
         </el-col>
@@ -89,6 +89,7 @@
 <script>
 import UpdateDetails from './details'
 import { getCheckoutList } from '@/api/checkout';
+import { formateDate } from '@/utils/formateDate';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -101,11 +102,15 @@ export default {
       searchForm: {
         roomInfo: '',
         tenantInfo: '',
-        CheckinTimeRange: '',
-        CheckoutTimeRange: '',
+        statCheckinTime: '',
+        endCheckinTime: '',
+        statCheckoutTime: '',
+        endCheckoutTime: '',
         startMoney: '',
         endMoney: ''
       },
+      checkinTimeRange: '',
+      checkoutTimeRange: '',
       CheckoutList: [],
       checkoutData: {},
       page: {
@@ -120,9 +125,39 @@ export default {
     this.getCheckoutList(null);
   },
   methods: {
+    formateDate,
     handlePageChange(item) {
       const para = { page: item.currentPage, limit: item.pageSize };
       this.getCheckoutList(para);
+    },
+    onSearch(param) {
+      if (this.checkinTimeRange == null || this.checkinTimeRange == '') {
+        param.statCheckinTime = ''
+        param.endCheckinTime = ''
+      } else {
+        param.statCheckinTime = this.formateDate(this.checkinTimeRange[0])
+        param.endCheckinTime = this.formateDate(this.checkinTimeRange[1])
+      }
+      if (this.checkoutTimeRange == null || this.checkoutTimeRange == '') {
+        param.statCheckoutTime = ''
+        param.endCheckoutTime = ''
+      } else {
+        param.statCheckoutTime = this.formateDate(this.checkoutTimeRange[0])
+        param.endCheckoutTime = this.formateDate(this.checkoutTimeRange[1])
+      }
+      getCheckoutList(param).then(res => {
+        if (res.data.code === 0) {
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          this.CheckoutList = res.data.data
+          this.loading = false;
+        }else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
+      })
     },
     getCheckoutList(param) {
       getCheckoutList(param).then(res => {
@@ -131,7 +166,6 @@ export default {
           this.page.pageSize = res.data.page.limit
           this.page.totalPage = res.data.page.totalPages
           this.page.totalSize = res.data.page.totalRows
-          console.log('退房记录返回的数据是',res.data)
           this.CheckoutList = res.data.data
           this.loading = false;
         }else if (res.data.code === 3) {

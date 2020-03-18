@@ -26,9 +26,12 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="状态：" prop="state">
+            <!-- <el-select v-model="searchForm.state" placeholder="请选择状态" clearable>
+              <el-option label="未退房未到期" value="1"></el-option>
+              <el-option label="未退房已到期" value="2"></el-option>
+            </el-select> -->
             <el-select v-model="searchForm.state" placeholder="请选择状态" clearable>
-              <el-option key="1" label="未退房未到期" value="未退房未到期"></el-option>
-              <el-option key="2" label="未退房已到期" value="未退房已到期"></el-option>
+              <el-option v-for="(item,idx) in states" :key="idx" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -37,7 +40,7 @@
         <el-col :span="8">
           <el-form-item label="时间：">
             <el-date-picker
-              v-model="searchForm.createTimeRange"
+              v-model="createTimeRange"
               type="daterange"
               range-separator="-"
               start-placeholder="入住时间"
@@ -53,7 +56,7 @@
         </el-col>
         <el-col :span="4">
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getCheckinList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="onSearch(searchForm)">查询</el-button>
             <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
           </el-form-item>
         </el-col>
@@ -101,12 +104,13 @@
             type="text"
             icon="el-icon-edit"
             class="red"
-            @click="checkout(checkinData)"
+            @click="$refs.checkOut.open()"
           >退房</el-button>
         </template>
       </el-table-column>
     </el-table>
     <add-dialog ref="addDialog" title="新增入住" @confirmData="(item) => addcheckin(item)"/>
+    <check-out ref="checkOut" title="调整房费" @confirmData="(item) => checkout(item)"/>
     <update-details ref="updateDetails" title="入住详情"/>
     <update-dialog ref="updateDialog" title="修改入住天数" @confirmData="(item) => updateCheckin(item)"/>
     <update-room ref="updateRoom" title="换房" @confirmData="(item) => updateRoom(item)"/>
@@ -119,6 +123,7 @@ import AddDialog from './addCheckin'
 import UpdateDetails from './details'
 import UpdateDialog from './updateDialog'
 import UpdateRoom from './updateroom'
+import CheckOut from './checkout'
 import { getCheckinList,addCheckin,updateCheckin,updateRoom } from '@/api/checkin';
 import { addCheckout } from '@/api/checkout';
 import { getCategoryList } from '@/api/category'
@@ -130,7 +135,8 @@ export default {
     AddDialog,
     UpdateDetails,
     UpdateDialog,
-    UpdateRoom
+    UpdateRoom,
+    CheckOut
   },
   data () {
     return {
@@ -140,12 +146,22 @@ export default {
         roomType: '',
         bedType: '',
         state: '',
-        createTimeRange: '',
         startMoney: '',
         endMoney: '',
         statTime: '',
         endTime: ''
       },
+      states: [
+        {
+          label: '未退房未到期',
+          value: 1
+        },
+        {
+          label: '未退房已到期',
+          value: 2
+        }
+      ],
+      createTimeRange: '',
       checkinList: [],
       checkinData: {},
       bedTypeList: [],
@@ -174,16 +190,32 @@ export default {
         }
       })
     },
-    getCheckinList(param) {
-      if (this.searchForm.createTimeRange == null || this.searchForm.createTimeRange == '') {
-        this.searchForm.statTime = ''
-        this.searchForm.endTime = ''
+    onSearch (param) {
+      if (this.createTimeRange == null || this.createTimeRange == '') {
+        param.statTime = ''
+        param.endTime = ''
       } else {
-        this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
-        this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
+        param.statTime = this.formateDate(this.createTimeRange[0])
+        param.endTime = this.formateDate(this.createTimeRange[1])
       }
-      delete this.searchForm.createTimeRange
-      console.log('查询蚕食是param',this.searchForm)
+      if(param.state == '') {
+        param.state = 1
+      }
+      getCheckinList(param).then(res => {
+        if (res.data.code == 0) {
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          this.checkinList = res.data.data
+          this.loading = false;
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
+      })
+    },
+    getCheckinList(param) {
       getCheckinList(param).then(res => {
         if (res.data.code == 0) {
           this.page.currentPage = res.data.page.page
@@ -270,16 +302,10 @@ export default {
         this.getCheckinList()
       })
     },
-    checkout(checkinData){
-    this.$confirm('确认保存吗？', '是否保存', {
-      cancelButtonText: '取消',
-      confirmButtonText: '确认',
-      lockScroll: false,
-      type: 'warning'
-    }).then(() => {
+    checkout(item){
       const param = {
-        checkinId: checkinData.checkinId,
-        money: 100 // money怎末搞
+        checkinId: this.checkinData.checkinId,
+        money: item.money
       }
       addCheckout(param).then(res => {
         console.log('退房的返回的数据是',res.data)
@@ -288,9 +314,13 @@ export default {
             type: 'success',
             message: '退房成功'
           })
+        } else if (res.data.code == 5) {
+          this.$message({
+            type: 'info',
+            message: res.data.data
+          })
         }
       })
-    })
     }
   }
 }

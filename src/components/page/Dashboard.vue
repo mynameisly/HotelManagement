@@ -6,7 +6,7 @@
                     <div class="user-info">
                         <img src="../../assets/img/img.jpg" class="user-avator" alt />
                         <div class="user-info-cont">
-                            <div class="user-info-name">{{name}}</div>
+                            <div class="user-info-name">{{item.number}}</div>
                             <div>{{item.position.positionName}}</div>
                         </div>
                     </div>

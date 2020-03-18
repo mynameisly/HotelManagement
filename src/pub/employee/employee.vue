@@ -144,6 +144,7 @@ export default {
     },
     mouseEnter (data) {
       this.empData = Object.assign({}, data)
+      console.log('this.empData', this.empData)
     },
     addemp (item) {
       // console.log('新增员工参数', item)
@@ -218,7 +219,8 @@ export default {
         type: 'warning',
         center: 'true'
       }).then((res) => {
-        resetPassword(null).then(res => {
+        const employeeId = this.empData.employeeId
+        resetPassword(employeeId).then(res => {
           if(res.data.code === 0) {
             this.$message({
               type: 'success',
