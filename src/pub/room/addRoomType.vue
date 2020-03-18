@@ -3,14 +3,7 @@
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="roomtypeForm" :model="item" :rules="rules" label-width="120px">
         <el-form-item label="客房类型：" prop="roomTypeName">
-          <el-select v-model="item.roomTypeName" placeholder="请选择客房类型" clearable>
-            <el-option
-              v-for="item in roomTypeList"
-              :key="item.roomTypeId"
-              :label="item.roomTypeName"
-              :value="item.roomTypeName">
-            </el-option>
-          </el-select> 
+          <el-input v-model="item.roomTypeName" placeholder="请输入客房类型" clearable/>
         </el-form-item>
         <el-form-item label="可住人数：" prop="peopleNum">
           <el-input v-model="item.peopleNum" placeholder="请输入可住人数" clearable/>
@@ -78,7 +71,7 @@
 <script>
 import axios from 'axios'
 import { getCategoryList } from '@/api/category'
-import { getRoomTypeById,getAllRoomTypeList } from '@/api/roomtype'
+import { getRoomTypeById } from '@/api/roomtype'
 export default {
   props: {
     title: String,
@@ -88,7 +81,6 @@ export default {
     return {
       visible: false,
       bedTypeList: [],// 保存床型
-      roomTypeList: [],
       fileList: [],
       item: {
         roomType: '',
@@ -114,7 +106,6 @@ export default {
   },
   mounted() {
     this.getCategoryList()
-    this.getAllRoomTypeList()
   },
   methods: {
     open (item) { // item就是roomTypeData
@@ -125,13 +116,6 @@ export default {
       } else {
         this.getRoomTypeById(item.roomTypeId)
       }
-    },
-    getAllRoomTypeList() {
-      getAllRoomTypeList().then(res => {
-        if(res.data.code === 0){
-          this.roomTypeList = res.data.data
-        }
-      })
     },
     getCategoryList() {
       console.log('进入查询所有床类型')

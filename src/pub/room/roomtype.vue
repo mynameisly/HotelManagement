@@ -4,14 +4,7 @@
       <el-row>
         <el-col :span="6">
           <el-form-item label="客房类型：" prop="roomType">
-            <el-select v-model="searchForm.roomTypeName" placeholder="请选择客房类型" clearable>
-              <el-option
-                v-for="item in roomTypeLists"
-                :key="item.roomTypeId"
-                :label="item.roomTypeName"
-                :value="item.roomTypeName">
-              </el-option>
-            </el-select> 
+            <el-input v-model="searchForm.roomTypeName" placeholder="请输入客房类型" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -156,7 +149,7 @@ import AddDialog from './addRoomType'
 import updateDialog from './addRoomType'
 import axios from 'axios'
 import { getCategoryList } from '@/api/category'
-import { getAllRoomTypeList, getRoomTypeList,addRoomType,updateRoomType,delRoomType } from '@/api/roomtype';
+import { getRoomTypeList,addRoomType,updateRoomType,delRoomType } from '@/api/roomtype';
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -178,7 +171,6 @@ export default {
       },
       roomTypeList: [],
       bedTypeList: [],
-      roomTypeLists: [],
       roomTypeData: {},
       page: {
         currentPage: 0, // 当前页，对应接口中的page
@@ -190,17 +182,9 @@ export default {
   },
   mounted () {
     this.getRoomTypeList(null);
-    this.getAllRoomTypeList()
     this.getCategoryList()
   },
   methods: {
-    getAllRoomTypeList() {
-      getAllRoomTypeList().then(res => {
-        if(res.data.code === 0){
-          this.roomTypeLists = res.data.data
-        }
-      })
-    },
     handlePageChange(item) {
       // console.log(item);// currentPage=1  pageSize=30条
       const para = { page: item.currentPage, limit: item.pageSize };

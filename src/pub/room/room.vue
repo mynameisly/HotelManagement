@@ -159,7 +159,7 @@
       </el-col>
     </el-row> -->
     <add-dialog ref="addDialog" title="新增"  @confirmData="(item,fileList) => addroom(item,fileList)"/>
-    <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroom(item)"/>
+    <update-dialog ref="updateDialog" title="修改"  @confirmData="(item,fileList) => updateroom(item,fileList)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
@@ -272,14 +272,21 @@ export default {
         }
       })
     },
-    updateroom () { // 修改客房类型
+    updateroom (item,fileList) { // 修改客房类型
+      let imgUrls = []
+      fileList.forEach((ele,idx) => {
+        imgUrls.push(ele.url)
+      })
+      console.log('imgUrls', imgUrls)
+      item.imgUrls = imgUrls.join()
+      delete item.imgList
       console.log('修改客房类型', item)
       updateroom(item).then(res => {
         console.log('修改客房类型返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
-            message: '修改客房类型成功'
+            message: '修改客房详情成功'
           })
           this.getroomList()
         }
