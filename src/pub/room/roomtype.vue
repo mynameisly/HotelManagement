@@ -139,7 +139,7 @@
       </el-col>
     </el-row> -->
     <add-dialog ref="addDialog" title="新增"  @confirmData="(item,fileList) => addroomtype(item,fileList)"/>
-    <update-dialog ref="updateDialog" title="修改"  @confirmData="(item) => updateroomtype(item)"/>
+    <update-dialog ref="updateDialog" title="修改"  @confirmData="(item,fileList) => updateroomtype(item,fileList)"/>
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
   </div>
 </template>
@@ -238,7 +238,13 @@ export default {
         }
       })
     },
-    updateroomtype () { // 修改客房类型
+    updateroomtype (item,fileList) { // 修改客房类型
+      let imgUrls = []
+      fileList.forEach((ele,idx) => {
+        imgUrls.push(ele.url)
+      })
+      item.imgUrls = imgUrls.join()
+      delete item.imgList
       console.log('修改客房类型', item)
       updateRoomType(item).then(res => {
         console.log('修改客房类型返回数据是', res)

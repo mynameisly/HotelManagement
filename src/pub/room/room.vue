@@ -277,10 +277,8 @@ export default {
       fileList.forEach((ele,idx) => {
         imgUrls.push(ele.url)
       })
-      console.log('imgUrls', imgUrls)
       item.imgUrls = imgUrls.join()
       delete item.imgList
-      console.log('修改客房类型', item)
       updateroom(item).then(res => {
         console.log('修改客房类型返回数据是', res)
         if(res.data.code == 0) {
