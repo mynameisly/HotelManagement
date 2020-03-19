@@ -45,7 +45,6 @@
         <el-col :span="4">
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="onSearch(searchForm)">查询</el-button>
-            <el-button type="primary" icon="el-icon-plus" @click="$refs.addDialog.open(null)">新增</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -80,7 +79,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- <add-dialog ref="addDialog" title="新增"  @confirmData="(item) => addCheckout(item)"/> -->
     <page-component :total="page.totalSize" :page="page" @pageChange="(item)=>handlePageChange(item)" />
     <update-details ref="updateDetails" title="退房详情"/>
   </div>

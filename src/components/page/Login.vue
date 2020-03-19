@@ -63,6 +63,11 @@ export default {
                     type: 'success'
                   });
                   this.saveUserData(res)
+                } else if (res.data.code === 22) {
+                  this.$message({
+                    type: 'info',
+                    message: res.data.msg
+                  });
                 }
               })
             } else {

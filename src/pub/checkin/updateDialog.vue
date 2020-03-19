@@ -3,7 +3,7 @@
     <el-dialog :title="title" :visible.sync="visible" top="8rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="updateForm" :model="item" :rules="rules" label-width="100px">
         <el-form-item label="入住天数:" prop="checkinDay">
-          <el-input v-model="item.checkinDay"  palceholder="请输入入住天数" clearable/>
+          <el-input v-model="item.checkinDay" type="number" min="1" palceholder="请输入入住天数" clearable/>
         </el-form-item>
       </el-form>
       <span slot="footer">

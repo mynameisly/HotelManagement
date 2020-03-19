@@ -29,7 +29,7 @@
         <el-col :span="8">
           <el-form-item label="时间：">
             <el-date-picker
-              v-model="searchForm.createTimeRange"
+              v-model="createTimeRange"
               type="daterange"
               range-separator="-"
               start-placeholder="服务开始时间"
@@ -39,7 +39,7 @@
         </el-col>
         <el-col :span="4">
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" @click="getServiceList(searchForm)">查询</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="onSearch(searchForm)">查询</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -107,6 +107,7 @@ import { getServiceList,addService,updateService,delService,finishService } from
 import { getempList } from '@/api/employee';
 import { getCategoryList } from '@/api/category';
 import PageComponent from '@/components/Pagenation/index'
+import { formateDate } from '@/utils/formateDate';
 export default {
   components: {
     PageComponent,
@@ -120,10 +121,10 @@ export default {
       empList: [], // 保存员工信息
       categoryList: [], // 保存类型信息
       searchForm: {
-        createTimeRange: '',
         employeeName: '',
         categoryName: ''
       },
+      createTimeRange: '',
       serviceList: [],
       serviceData: {},
       page: {
@@ -140,6 +141,7 @@ export default {
     this.getCategoryList();
   },
   methods: {
+    formateDate,
     getempList() {
       getempList(null).then(res => {
         this.empList = this.handleEmp(res.data.data)
@@ -170,8 +172,30 @@ export default {
       const para = { page: item.currentPage, limit: item.pageSize };
       this.getServiceList(para);
     },
+    onSearch (param) {
+      if (this.createTimeRange == null || this.createTimeRange == '') {
+        param.statTime = ''
+        param.endTime = ''
+      } else {
+        param.statTime = this.formateDate(this.createTimeRange[0])
+        param.endTime = this.formateDate(this.createTimeRange[1])
+      }
+      getServiceList(param).then(res => {
+        if (res.data.code == 0) {
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          this.serviceList = res.data.data
+        } else if (res.data.code === 3) {
+          alert('登录以过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
+      })
+    },
     getServiceList(param) {
       getServiceList(param).then(res => {
+        this.loading = false;
         console.log('客房服务返回的数据是',res.data)
         this.page.currentPage = res.data.page.page
         this.page.pageSize = res.data.page.limit
@@ -183,7 +207,6 @@ export default {
           alert('登录以过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
-        this.loading = false;
       })
     },
     mouseEnter (data) {

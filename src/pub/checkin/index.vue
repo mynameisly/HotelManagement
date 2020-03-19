@@ -245,7 +245,7 @@ export default {
       }
       tenantsArr.push(tenantsArrChild)
       const param = {
-        "checkinDay": item.checkinDay,
+        "checkinDay": Number(item.checkinDay),
         "errorInfo": {},
         "roomId": item.roomId,
         "tenants": tenantsArr
@@ -256,7 +256,7 @@ export default {
         console.log('新增入住',res)
         if (res.data.code == 5) {
           this.$message({
-            type: 'warning',
+            type: 'info',
             message: res.data.data
           })
         } else if (res.data.code === 0) {
@@ -280,6 +280,11 @@ export default {
           this.$message({
             type: 'success',
             message: '修改入住天数成功'
+          })
+        } else if (res.data.code === 7) {
+          this.$message({
+            type: 'info',
+            message: res.data.data
           })
         }
         this.getCheckinList()
