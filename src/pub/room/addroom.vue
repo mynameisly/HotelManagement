@@ -6,12 +6,12 @@
           <el-input v-model="item.number" placeholder="请输入房号" clearable/>
         </el-form-item>
         <el-form-item label="客房类型：" prop="roomType">
-          <el-select v-model="item.roomType" placeholder="请选择客房类型" clearable>
+          <el-select v-model="item.roomType" placeholder="请选择客房类型" clearable @change="selectChanged">
             <el-option
               v-for="item in roomTypeList"
               :key="item.roomTypeId"
               :label="item.roomTypeName"
-              :value="item.roomTypeName">
+              :value="item.roomTypeId">
             </el-option>
           </el-select> 
         </el-form-item>
@@ -88,7 +88,7 @@
 
 <script>
 import { getCategoryList } from '@/api/category'
-import { getAllRoomTypeList } from '@/api/roomtype'
+import { getAllRoomTypeList, getRoomTypeById } from '@/api/roomtype'
 import { getroomById } from '@/api/room'
 import { uploadFile } from '@/api/uploadFile'
 export default {
@@ -101,9 +101,7 @@ export default {
       visible: false,
       roomTypeList: [], // 客房类型
       bedTypeList: [],// 保存床型
-      fileList: [
-        // {name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'},
-      ],
+      fileList: [],
       item: {
         number: '',
         peopleNum: '',
@@ -159,11 +157,19 @@ export default {
       })
     },
     getroomById(id) {
-      console.log('进入到根据ID查询客房类型')
       getroomById(id).then(res => {
-        console.log('根据ID查询客房类型返回数据是，', res)
         if(res.data.code === 0){
           this.item = res.data.data
+        }
+      })
+    },
+    selectChanged (value) {
+      console.log('客房类型是切换',value)
+      getRoomTypeById(value).then(res => {
+        console.log('客房类型id查询到的数据是切换',res.data.data)
+        if(res.data.code === 0){
+          this.item = res.data.data
+          this.item.roomType = value
         }
       })
     },
