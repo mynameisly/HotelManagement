@@ -132,6 +132,11 @@ export default {
     },
     handleStatList (statList) {
       const temp = statList
+      // 每次点击搜索之前把数组置空，否则会一直push进数组
+      this.options1.labels = []
+      this.options2.labels = []
+      this.options1.datasets[0].data = []
+      this.options2.datasets[0].data = []
       temp.forEach((ele, idx) => {
         this.options1.labels.push(ele.month)
         this.options2.labels.push(ele.month)

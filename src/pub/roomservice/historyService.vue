@@ -114,6 +114,10 @@ export default {
       getServiceHistoryList(param).then(res => {
         console.log('历史服务信息res是', res)
         if (res.data.code == 0){
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
           this.currentServiceInfo = res.data.data
         }
       })
@@ -124,7 +128,7 @@ export default {
     },
     mouseEnter (data) {
       this.serviceData = Object.assign({}, data)
-      console.log('h行信息',this.serviceData)
+      // console.log('h行信息',this.serviceData)
     },
     cancel () {
       this.visible = false

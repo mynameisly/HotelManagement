@@ -3,12 +3,13 @@
     <el-dialog :title="title" :visible.sync="visible" top="8rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="updateForm" :model="item" :rules="rules" label-width="100px">
         <el-form-item label="房号:" prop="number">
-          <el-select v-model="item.number" placeholder="请选择房号" @focus='handleNoRepeat' clearable>
+          <!-- <el-select v-model="item.number" placeholder="请选择房号" @focus='handleNoRepeat' clearable  @change="selectChanged"> -->
+          <el-select v-model="item.number" placeholder="请选择房号" clearable  @change="selectChanged">
             <el-option
               v-for="item in roomList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item.roomId"
+              :label="item.number"
+              :value="item.roomId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -32,9 +33,10 @@ export default {
     return {
       visible: false,
       firstRoomList: [],
-      roomList: [],// 保存房号和roomId
+      roomList: {},// 保存房号和roomId
       item: {
-        number: ''
+        number: '',
+        roomId: ''
       },
       rules: {
         number: [{ required: true, message: '请选择房号', trigger: 'change' }]
@@ -57,33 +59,14 @@ export default {
     getroomList() {
       getroomList({state: '空闲'}).then(res => {
         if(res.data.code == 0) {
-          this.firstRoomList = res.data.data
-          this.handleRoom(res.data.data)
+          this.roomList = res.data.data
+          // console.log('this.rooLisst空闲', res.data.data)
         }
       })
     },
-    handleRoom (data) {
-      const uploadArr = data
-      let upload
-      for (var k in uploadArr) {
-        upload = uploadArr[k]
-        upload.number = upload.number // 房号
-      }
-      return uploadArr
-    },
-    handleNoRepeat () { // 去重
-      let object = {}
-      let roomList = []
-      let data = this.firstRoomList
-      let objres = data.reduce((item, next) => {
-        object[next.roomId] ? ' ' : object[next.roomId] = true && item.push(next)
-        return item
-      }, [])
-      for (let i = 0; i < objres.length; i++) {
-        roomList.push({label: objres[i].number, value: objres[i].roomId})
-      }
-      this.roomList = roomList
-      console.log('this.rooLisst', this.roomList)
+    selectChanged (value) { // 换房的roomId是传选择之后的roomId
+      this.item.roomId = value
+      // console.log('this.rooLisstvalue', value)
     },
     submitForm (updateForm) {
       this.$refs.updateForm.validate(valid => {

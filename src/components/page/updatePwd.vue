@@ -1,6 +1,6 @@
 <template>
   <div id="updatePwd" style="background: transparent;border:1px solid gainsboro">
-    <el-form :model="searchFrom" :rules="rules" label-width="80px">
+    <el-form :model="searchForm" :rules="rules" label-width="80px">
       <el-form-item label="原密码">
         <el-input
           v-model="searchForm.oldPassword"
@@ -18,7 +18,7 @@
         <el-button
           style="width:100%;padding:11px;"
           type="primary"
-          @click="updatePwd"
+          @click="updatePwd(searchForm)"
         >修 改 密 码</el-button>
       </el-form-item>
     </el-form>
@@ -37,6 +37,8 @@
 
 <script>
 import axios from 'axios'
+import { updatePassword } from '@/api/employee'
+
 export default {
   data () {
     const validatePass = (rule, value, callback) => {
@@ -65,18 +67,24 @@ export default {
     }
   },
   methods: {
-    updatePwd () { // 修改密码
-      axios.put('/json/user/updatePassword?oldPassword=' + this.searchForm.oldPassword + '&newPassword=' + this.searchForm.newPassword).then((res) => {
+    updatePwd (searchForm) { // 修改密码
+    console.log('修改密码的参数是', searchForm)
+      updatePassword(searchForm).then((res) => {
         if (res.data.code === 0) {
           this.$message({
             type: 'success',
-            message: '修改密码成功'
+            message: '修改密码成功,请重新登录'
           })
+          setTimeout(() => { 
+            this.$router.push({path:'/login'})
+          }, 1000);
         } else if(res.data.code === 7) {
           alert(res.data.data)
         }
       })
-      this.$router.push({path:'/employee'})
+    },
+    goBack () {
+      this.$router.go(-1)
     }
   }
 }

@@ -17,7 +17,7 @@
           </el-col>
           <el-col :span="10">
             <el-form-item label="入住天数:" prop="checkinDay">
-              <el-input v-model="checkinForm.checkinDay"  placeholder="请输入入住天数" clearable/>
+              <el-input v-model="checkinForm.checkinDay" type="number" min="1"  placeholder="请输入入住天数" clearable/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -54,24 +54,24 @@
           <div class="moreRulesIn" v-for="(item, index) in checkinForm.moreNotifyObject" :key="item.key" >
             <el-row>
               <el-col :span="10">
-                <el-form-item label="姓名:" :prop="'moreNotifyObject.' + index +'.tenantName'" :rules="[{required: true, message: '请完善信息'}]">
+                <el-form-item label="姓名:" :prop="'moreNotifyObject.' + index +'.tenantName'" :rules="[{required: true, message: '请正确填写信息'}]">
                   <el-input v-model="item.tenantName" placeholder="请输入姓名" clearable/>
                 </el-form-item>
               </el-col>
               <el-col :span="10">
-                <el-form-item label="身份证:" :prop="'moreNotifyObject.' + index +'.tenantIdCard'" :rules="[{required: true, message: '请完善信息'}]">
+                <el-form-item label="身份证:" :prop="'moreNotifyObject.' + index +'.tenantIdCard'" :rules="[{required: true, message: '请正确填写信息'}]">
                   <el-input v-model="item.tenantIdCard" placeholder="请输入身份证" clearable />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="10">
-                <el-form-item label="联系电话:" :prop="'moreNotifyObject.'+ index +'.tenantTel'" :rules="[{required: true, message: '请完善信息'}]">
+                <el-form-item label="联系电话:" :prop="'moreNotifyObject.'+ index +'.tenantTel'" :rules="[{required: true, message: '请正确填写信息'}]">
                   <el-input v-model="item.tenantTel" placeholder="请输入联系电话" clearable />
                 </el-form-item>
               </el-col>
               <el-col :span="10">
-                <el-form-item label="性别:" :prop="'moreNotifyObject.' + index + '.tenantSex'" :rules="[{required: true, message: '请完善信息'}]">
+                <el-form-item label="性别:" :prop="'moreNotifyObject.' + index + '.tenantSex'" :rules="[{required: true, message: '请正确填写信息'}]">
                   <el-radio-group v-model="item.tenantSex">
                   <el-radio v-model="item.tenantSex" label="男" border>男</el-radio>
                   <el-radio v-model="item.tenantSex" label="女" border>女</el-radio>
