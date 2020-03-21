@@ -223,14 +223,15 @@ export default {
       item.imgUrls = imgUrls.join()
       // console.log('canshu', item)
       addRoomType(item).then(res => {
-        console.log('新增客房返回数据是', res)
+        // console.log('新增客房返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
             message: '新增客房类型成功'
           })
           this.getRoomTypeList()
-        } else if(res.data.code == 0) {
+        } 
+        if(res.data.code == 5) {
           this.$message({
             type: 'info',
             message: res.data.data
@@ -245,9 +246,9 @@ export default {
       })
       item.imgUrls = imgUrls.join()
       delete item.imgList
-      console.log('修改客房类型', item)
+      // console.log('修改客房类型item', item)
       updateRoomType(item).then(res => {
-        console.log('修改客房类型返回数据是', res)
+        // console.log('修改客房类型返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',

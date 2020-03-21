@@ -72,6 +72,7 @@
 import axios from 'axios'
 import { getCategoryList } from '@/api/category'
 import { getRoomTypeById } from '@/api/roomtype'
+import { uploadFile } from '@/api/uploadFile'
 export default {
   props: {
     title: String,
@@ -109,7 +110,7 @@ export default {
   },
   methods: {
     open (item) { // item就是roomTypeData
-    console.log('item',item)
+    // console.log('item',item)
       this.visible = true
       if (item === null || item === undefined) {
         this.item = {}
@@ -118,30 +119,30 @@ export default {
       }
     },
     getCategoryList() {
-      console.log('进入查询所有床类型')
+      // console.log('进入查询所有床类型')
       getCategoryList({type: '床型'}).then(res => {
-        console.log('进入查询所有床类型res',res)
+        // console.log('进入查询所有床类型res',res)
         if(res.data.code === 0){
           this.bedTypeList = res.data.data
         }
       })
     },
     getRoomTypeById(id) {
-      console.log('进入到根据ID查询客房类型')
+      // console.log('进入到根据ID查询客房类型')
       getRoomTypeById(id).then(res => {
-        console.log('根据ID查询客房类型返回数据是，', res)
+        // console.log('根据ID查询客房类型返回数据是，', res)
         if(res.data.code === 0){
           this.item = res.data.data
         }
       })
     },
     beforeUpload(file) {
-      console.log('file信息是',file)
+      // console.log('file信息是',file)
       let files = new FormData();
       files.append('multipartFile',file)
       let headers = {'Content-Type': 'multipart/form-data'}
       uploadFile(files,headers).then((res) => {
-        console.log('文件上传返回数据',res.data.data)
+        // console.log('文件上传返回数据',res.data.data)
         if (res.data.code === 0){
           let fileChild = {
             name: file.name,
@@ -150,7 +151,7 @@ export default {
           this.fileList.push(fileChild)
         }
       })
-      console.log('this.fileList',this.fileList)
+      // console.log('this.fileList',this.fileList)
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
