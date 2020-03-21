@@ -253,9 +253,9 @@ export default {
       fileList.forEach((ele,idx) => {
         imgUrls.push(ele.url)
       })
-      console.log('imgUrls', imgUrls)
+      // console.log('imgUrls', imgUrls)
       item.imgUrls = imgUrls.join()
-      console.log('canshu', item)
+      // console.log('canshu', item)
       addroom(item).then(res => {
         // console.log('新增客房返回数据是', res)
         if(res.data.code == 0) {
@@ -264,7 +264,8 @@ export default {
             message: '新增客房类型成功'
           })
           this.getroomList()
-        } else if(res.data.code == 0) {
+        } 
+        if(res.data.code == 5) {
           this.$message({
             type: 'info',
             message: res.data.data
@@ -273,14 +274,15 @@ export default {
       })
     },
     updateroom (item,fileList) { // 修改客房类型
+    // console.log('修改客房参数是', item)
       let imgUrls = []
       fileList.forEach((ele,idx) => {
         imgUrls.push(ele.url)
       })
       item.imgUrls = imgUrls.join()
-      delete item.imgList
+      // console.log('修改客房参数是', item)
       updateroom(item).then(res => {
-        console.log('修改客房类型返回数据是', res)
+        // console.log('修改客房类型返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
