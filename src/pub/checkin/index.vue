@@ -210,7 +210,7 @@ export default {
           this.checkinList = res.data.data
           this.loading = false;
         } else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })
@@ -222,11 +222,11 @@ export default {
           this.page.pageSize = res.data.page.limit
           this.page.totalPage = res.data.page.totalPages
           this.page.totalSize = res.data.page.totalRows
-          console.log('返回的数据是',res.data)
+          // console.log('返回的数据是',res.data)
           this.checkinList = res.data.data
           this.loading = false;
         } else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })
@@ -235,7 +235,7 @@ export default {
       this.checkinData = Object.assign({}, data)
     },
     addcheckin (item) { // 新增的住客不止一个，可能有多个人，这种写法不行
-      console.log('新增入住通知', item)
+      // console.log('新增入住通知', item)
       let tenantsArr = item.moreNotifyObject
       let tenantsArrChild = {
         "tenantIdCard": item.tenantIdCard,
@@ -250,10 +250,10 @@ export default {
         "roomId": item.roomId,
         "tenants": tenantsArr
       }
-      console.log('param', param)
+      // console.log('param', param)
       const headers = { 'Content-type': 'application/json;charset=utf-8'}
       addCheckin(JSON.stringify(param),headers).then(res => {
-        console.log('新增入住',res)
+        // console.log('新增入住',res)
         if (res.data.code == 5) {
           this.$message({
             type: 'info',
@@ -273,9 +273,9 @@ export default {
         checkinId: item.checkinId,
         checkinDay: item.checkinDay
       }
-      console.log('修改入住天数的参数是',param)
+      // console.log('修改入住天数的参数是',param)
       updateCheckin(param).then(res => {
-        console.log('修改入住天数的参数是',res.data)
+        // console.log('修改入住天数的参数是',res.data)
         if(res.data.code == 0){
           this.$message({
             type: 'success',

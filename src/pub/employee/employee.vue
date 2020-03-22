@@ -133,10 +133,12 @@ export default {
         // console.log('返回的数据是',res.data)
         // console.log(res.data.data)
         if (res.data.code === 3) {
-          this.$message({
-            type: 'error',
-            message: res.data.msg
-          })
+          // this.$message({
+          //   type: 'error',
+          //   message: res.data.msg
+          // })
+          alert('登录已过期，请重新登录')
+          this.$router.push({ path:'/login'} );
         }
         this.empList = res.data.data
         this.loading = false;
@@ -144,7 +146,7 @@ export default {
     },
     mouseEnter (data) {
       this.empData = Object.assign({}, data)
-      console.log('this.empData', this.empData)
+      // console.log('this.empData', this.empData)
     },
     addemp (item) {
       // console.log('新增员工参数', item)

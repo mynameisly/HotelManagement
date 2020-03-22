@@ -115,7 +115,7 @@ export default {
     },
     getCheckoutById(checkoutId) {
       getCheckoutById(checkoutId).then(res => {
-        console.log('根据id查询退房信息',res.data)
+        // console.log('根据id查询退房信息',res.data)
         if (res.data.code == 0){
           this.item = res.data.data.roomInfo
           this.tenantInfo = res.data.data.tenantInfo
