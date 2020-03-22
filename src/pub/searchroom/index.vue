@@ -163,7 +163,7 @@ export default {
           this.roomList = res.data.data
           this.loading = false;
         } else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })

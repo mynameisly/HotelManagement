@@ -152,7 +152,7 @@ export default {
           this.CheckoutList = res.data.data
           this.loading = false;
         }else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })
@@ -167,7 +167,7 @@ export default {
           this.CheckoutList = res.data.data
           this.loading = false;
         }else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })
@@ -176,7 +176,7 @@ export default {
       this.checkoutData = Object.assign({}, data)
     },
     addCheckout (item) {
-      console.log('新增通知', item)
+      // console.log('新增通知', item)
       const param = {
         "CheckoutDay": item.CheckoutDay,
         "errorInfo": {},
@@ -188,11 +188,11 @@ export default {
           "tenantTel": item.tenantTel
         }]
       }
-      console.log('param', param)
+      // console.log('param', param)
       const headers = { 'content-type': 'application/json;charset=utf-8'}
       // console.log('param', JSON.stringify(param))
       addCheckout(JSON.stringify(param),headers).then(res => {
-        console.log('新增入住',res)
+        // console.log('新增入住',res)
         if (res.data.code === 0) {
           this.$message({
             type: 'success',

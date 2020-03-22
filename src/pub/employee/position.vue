@@ -104,10 +104,12 @@ export default {
         this.page.totalSize = res.data.page.totalRows
         // console.log('返回的职位信息是',res.data)
         if (res.data.code === 3) {
-          this.$message({
-            type: 'error',
-            message: res.data.msg
-          })
+          // this.$message({
+          //   type: 'error',
+          //   message: res.data.msg
+          // })
+          alert('登录已过期，请重新登录')
+          this.$router.push({ path:'/login'} );
         }
         this.positionList = res.data.data
         this.loading = false;

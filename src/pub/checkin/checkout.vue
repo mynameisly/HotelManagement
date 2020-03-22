@@ -42,7 +42,7 @@ export default {
         lockScroll: false,
         type: 'warning'
       }).then(() => {
-        console.log('房费调整的数据是，', this.item)
+        // console.log('房费调整的数据是，', this.item)
         this.$emit('confirmData', this.item)
         this.resetForm('checkoutForm')
       })

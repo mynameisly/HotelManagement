@@ -123,10 +123,12 @@ export default {
           this.finList[0].money = res.data.data.money
           this.handleStatList(res.data.data.statList)
         } else if (res.data.code === 3) {
-          this.$message({
-            type: 'error',
-            message: res.data.msg
-          })
+          // this.$message({
+          //   type: 'error',
+          //   message: res.data.msg
+          // })
+          alert('登录已过期，请重新登录')
+          this.$router.push({ path:'/login'} );
         }
       })
     },

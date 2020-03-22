@@ -111,7 +111,7 @@ export default {
     },
     getCheckinById(checkinId) {
       getCheckinById(checkinId).then(res => {
-        console.log('根据id查询入住信息',res.data)
+        // console.log('根据id查询入住信息',res.data)
         if (res.data.code == 0){
           this.item = res.data.data.room
           this.tenants = res.data.data.tenants

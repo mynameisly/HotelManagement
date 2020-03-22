@@ -188,7 +188,7 @@ export default {
           this.page.totalSize = res.data.page.totalRows
           this.serviceList = res.data.data
         } else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })
@@ -196,7 +196,7 @@ export default {
     getServiceList(param) {
       getServiceList(param).then(res => {
         this.loading = false;
-        console.log('客房服务返回的数据是',res.data)
+        // console.log('客房服务返回的数据是',res.data)
         this.page.currentPage = res.data.page.page
         this.page.pageSize = res.data.page.limit
         this.page.totalPage = res.data.page.totalPages
@@ -204,7 +204,7 @@ export default {
         if(res.data.code == 0){
           this.serviceList = res.data.data
         } else if (res.data.code === 3) {
-          alert('登录以过期，请重新登录')
+          alert('登录已过期，请重新登录')
           this.$router.push({ path:'/login'} );
         }
       })
@@ -213,9 +213,9 @@ export default {
       this.serviceData = Object.assign({}, data)
     },
     addservice (item) {
-      console.log('新增客房服务', item)
+      // console.log('新增客房服务', item)
       addService(item).then(res => {
-        console.log('新增客房服务返回数据是', res)
+        // console.log('新增客房服务返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
@@ -226,9 +226,9 @@ export default {
       })
     },
     updateservice(item) {
-      console.log('修改客房服务', item)
+      // console.log('修改客房服务', item)
       updateService(item).then(res => {
-        console.log('修改客房服务返回数据是', res)
+        // console.log('修改客房服务返回数据是', res)
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
