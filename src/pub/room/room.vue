@@ -281,6 +281,7 @@ export default {
         imgUrls.push(ele.url)
       })
       item.imgUrls = imgUrls.join()
+      delete item.imgList
       // console.log('修改客房参数是', item)
       updateroom(item).then(res => {
         // console.log('修改客房类型返回数据是', res)
