@@ -255,8 +255,11 @@ export default {
       })
       // console.log('imgUrls', imgUrls)
       item.imgUrls = imgUrls.join()
+      item.roomType = item.roomTypeName
       delete item.imgList
-      // console.log('canshu', item)
+      delete item.roomTypeName
+      delete item.roomTypeId
+      // console.log('新增客房的canshu是', item)
       addroom(item).then(res => {
         // console.log('新增客房返回数据是', res)
         if(res.data.code == 0) {
