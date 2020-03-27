@@ -97,7 +97,7 @@
         direction="rtl"
         size="50%">
           <div v-for="(img, index) in roomTypeData.imgList" :key="index">
-            <img :src="img" alt="图片暂时无法找到">
+            <img :src="img" width="400" alt="图片暂时无法找到">
           </div>
       </el-drawer>
     </el-table>

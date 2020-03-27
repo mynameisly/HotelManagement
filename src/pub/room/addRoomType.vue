@@ -133,6 +133,8 @@ export default {
         // console.log('根据ID查询客房类型返回数据是，', res)
         if(res.data.code === 0){
           this.item = res.data.data
+          let imgList = res.data.data.imgList
+          this.fileList = imgList.map(item => ({url:item}))
         }
       })
     },
@@ -145,7 +147,7 @@ export default {
         // console.log('文件上传返回数据',res.data.data)
         if (res.data.code === 0){
           let fileChild = {
-            name: file.name,
+            // name: file.name,
             url: res.data.data
           }
           this.fileList.push(fileChild)
@@ -154,7 +156,11 @@ export default {
       // console.log('this.fileList',this.fileList)
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log('file', file);
+      // console.log('fileList', fileList);
+      this.fileList = this.fileList.filter((val) => {
+        (val.url).indexOf(file.url) < 0
+      })
     },
     handlePreview(file) {
       console.log(file);
@@ -168,6 +174,7 @@ export default {
             lockScroll: false,
             type: 'warning'
           }).then(() => {
+            console.log('this.fileList', this.fileList)
             this.$emit('confirmData', this.item,this.fileList)
             this.resetForm('roomtypeForm')
           })

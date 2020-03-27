@@ -160,6 +160,8 @@ export default {
       getroomById(id).then(res => {
         if(res.data.code === 0){
           this.item = res.data.data
+          let imgList = res.data.data.imgList
+          this.fileList = imgList.map(item => ({url:item}))
         }
       })
     },
@@ -195,7 +197,7 @@ export default {
         console.log('文件上传返回数据',res.data.data)
         if (res.data.code === 0){
           let fileChild = {
-            name: file.name,
+            // name: file.name,
             url: res.data.data
           }
           this.fileList.push(fileChild)
@@ -204,7 +206,10 @@ export default {
       // console.log('this.fileList',this.fileList)
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
+      this.fileList = this.fileList.filter((val) => {
+        (val.url).indexOf(file.url) < 0
+      })
     },
     handlePreview(file) {
       console.log(file);
