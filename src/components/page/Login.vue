@@ -27,21 +27,48 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import { login } from '@/api/login'
 import { mapGetters, mapActions } from "vuex";
 export default {
     data: function() {
-        return {
-            loginForm: {
-                number: '',
-                password: '',
-            },
-            rules: {
-                number: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-                password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-            },
-        };
+      const validateNumber = (rule, value, callback) => {
+      var reg = /^[0-9a-zA-Z]{6,16}$/; // 账号长度必须在6-16之间，且不能包含非法字符*&#@
+      if (value === '' || value === undefined) {
+        callback(new Error('请输入用户名'))
+      } else if (value.length < 6 || value.length > 18) {
+        callback(new Error('用户名长度必须在6-16之间'))
+      } else if (value.indexOf('*') > 0 || value.indexOf('#') > 0 || value.indexOf('@') > 0 || value.indexOf('&') > 0) {
+        callback(new Error('用户名不能含有非法字符*#@&'))
+      } else {
+        if (reg.test(value)) {
+          callback()
+        }
+      }
+    }
+    const validatePass = (rule, value, callback) => {
+      var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{6,}$/ // 密码长度必须在6-16之间，且必须包含数字和字母
+      if (value === '' || value === undefined) {
+        callback(new Error('请输入密码'))
+      } else if (value.length < 6 || value.length > 18) {
+        callback(new Error('密码长度必须在6-16之间'))
+      } else if (/^[a-z]+$/.test(value) || /^[0-9]+$/.test(value)) {
+        callback(new Error('密码必须同时包含数字和字母'))
+      } else {
+        if (reg.test(value)) {
+          callback()
+        }
+      }
+    }
+    return {
+      loginForm: {
+        number: '',
+        password: '',
+      },
+      rules: {
+        number: [{ required: true, validator: validateNumber, trigger: 'blur' }],
+        password: [{ required: true, validator: validatePass, trigger: 'blur' }]
+      },
+    };
     },
     computed: {
       ...mapGetters([ "number", "headImg"])
