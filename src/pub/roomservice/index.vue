@@ -219,7 +219,7 @@ export default {
         if(res.data.code == 0) {
           this.$message({
             type: 'success',
-            message: '新增客房类型成功'
+            message: '新增客房服务成功'
           })
           this.getServiceList()
         }

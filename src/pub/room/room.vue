@@ -55,8 +55,8 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="房费：" prop="startMoney">
-            <el-input v-model="searchForm.startMoney" placeholder="最低房费" clearable style="width:48%"/>-
-            <el-input v-model="searchForm.endMoney" placeholder="最高房费" clearable style="width:48%"/>
+            <el-input v-model="searchForm.startPrice" placeholder="最低房费" clearable style="width:48%"/>-
+            <el-input v-model="searchForm.endPrice" placeholder="最高房费" clearable style="width:48%"/>
           </el-form-item>
         </el-col>
       </el-row>

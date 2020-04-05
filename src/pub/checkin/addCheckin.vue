@@ -126,10 +126,10 @@ export default {
         type: 2,
         checkinDay: '',
         roomId: '',
-        // tenantName: '',
-        // tenantTel: '',
-        // tenantIdCard: '',
-        // tenantSex: '',
+        tenantName: '',
+        tenantTel: '',
+        tenantIdCard: '',
+        tenantSex: '',
         moreNotifyObject:[{
           tenantName: '',
           tenantIdCard:'',
@@ -234,6 +234,12 @@ export default {
         this.$refs.checkinForm.clearValidate()
       })
       this.checkinForm = {}
+      this.checkinForm.moreNotifyObject=[{
+        tenantName: '',
+        tenantIdCard:'',
+        tenantTel:'',
+        tenantSex:''
+      }]
       this.visible = false
     }
   }

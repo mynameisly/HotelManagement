@@ -235,7 +235,7 @@ export default {
       this.checkinData = Object.assign({}, data)
     },
     addcheckin (item) { // 新增的住客不止一个，可能有多个人，这种写法不行
-      // console.log('新增入住通知', item)
+      console.log('新增入住通知的参数是', item)
       let tenantsArr = item.moreNotifyObject
       let tenantsArrChild = {
         "tenantIdCard": item.tenantIdCard,
@@ -250,7 +250,7 @@ export default {
         "roomId": item.roomId,
         "tenants": tenantsArr
       }
-      // console.log('param', param)
+      console.log('param', param)
       const headers = { 'Content-type': 'application/json;charset=utf-8'}
       addCheckin(JSON.stringify(param),headers).then(res => {
         // console.log('新增入住',res)

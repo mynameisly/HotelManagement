@@ -16,7 +16,7 @@
         </el-form-item>
         <el-form-item label="职位:" prop="position">
           <!-- 显示的是职位，传递的是positionId  -->
-          <el-select v-model="item.position" placeholder="请选择职位" clearable>
+          <el-select v-model="item.positionId" placeholder="请选择职位" clearable>
             <el-option
               v-for="i in positionList"
               :key="i.positionId"
@@ -186,6 +186,7 @@ export default {
     getPositionList() {
       getPositionList(null).then(res => {
         this.positionList = res.data.data
+        // console.log('职位信息是',this.positionList)
       })
     },
     submitForm (empForm) {
