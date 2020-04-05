@@ -199,7 +199,7 @@ export default {
         param.endTime = this.formateDate(this.createTimeRange[1])
       }
       if(param.state == '') {
-        param.state = 1
+        param.state = 0
       }
       getCheckinList(param).then(res => {
         if (res.data.code == 0) {

@@ -33,7 +33,14 @@
       <el-row>
         <el-col :span="6">
           <el-form-item label="床型：">
-            <el-input v-model="searchForm.bedType" placeholder="请输入床型" clearable/>
+            <el-select v-model="searchForm.bedType" placeholder="请选择床型" clearable>
+              <el-option
+                v-for="i in bedTypeList"
+                :key="i.categoryId"
+                :label="i.categoryName"
+                :value="i.categoryName">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -111,6 +118,7 @@
 <script>
 import { getroomList } from '@/api/room';
 import { getAllRoomTypeList } from '@/api/roomtype'
+import { getCategoryList } from '@/api/category'
 import PageComponent from '@/components/Pagenation/index'
 export default {
   components: {
@@ -133,6 +141,7 @@ export default {
       roomList: [],
       roomData: {},
       roomTypeList: [], // 客房类型
+      bedTypeList: [],
       page: {
         currentPage: 0, // 当前页，对应接口中的page
         pageSize: 0, // 每页条数，对应接口中的limit
@@ -143,7 +152,8 @@ export default {
   },
   mounted () {
     this.getroomList(null);
-    this.getAllRoomTypeList()
+    this.getAllRoomTypeList();
+    this.getCategoryList()
   },
   methods: {
     handlePageChange(item) {
@@ -152,6 +162,13 @@ export default {
     },
     mouseEnter (data) {
       this.roomData = Object.assign({}, data)
+    },
+    getCategoryList() {
+      getCategoryList({type:'床型'}).then(res => {
+        if(res.data.code === 0){
+          this.bedTypeList = res.data.data
+        }
+      })
     },
     getroomList(param) {
       getroomList(param).then(res => {

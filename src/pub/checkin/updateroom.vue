@@ -3,8 +3,7 @@
     <el-dialog :title="title" :visible.sync="visible" top="8rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="updateForm" :model="item" :rules="rules" label-width="100px">
         <el-form-item label="房号:" prop="number">
-          <!-- <el-select v-model="item.number" placeholder="请选择房号" @focus='handleNoRepeat' clearable  @change="selectChanged"> -->
-          <el-select v-model="item.number" placeholder="请选择房号" clearable  @change="selectChanged">
+          <el-select v-model="item.number" placeholder="请选择房号" @change="selectChanged">
             <el-option
               v-for="item in roomList"
               :key="item.roomId"
