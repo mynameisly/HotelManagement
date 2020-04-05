@@ -23,7 +23,7 @@
             <el-col :span="10">
               <el-form-item label="服务时间：">
                 <el-date-picker
-                    v-model="searchForm.createTimeRange"
+                    v-model="createTimeRange"
                     type="daterange"
                     range-separator="-"
                     start-placeholder="起始时间"
@@ -33,7 +33,7 @@
             </el-col>
             <el-col :span="4">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-search" @click="getServiceHistoryList(searchForm)">查询</el-button>
+                  <el-button type="primary" icon="el-icon-search" @click="onSearch(searchForm)">查询</el-button>
                 </el-form-item>
             </el-col>
         </el-row>
@@ -79,9 +79,9 @@ export default {
       visible: false,
       searchForm: {
         employeeName: '',
-        createTimeRange: '',
         categoryName: ''
       },
+      createTimeRange: '',
       currentServiceInfo: [],
       categoryList: [],
       serviceData: {},
@@ -102,15 +102,28 @@ export default {
       this.visible = true
       this.categoryList = categoryList
     },
-    getServiceHistoryList(param) {
-      if (this.searchForm.createTimeRange == null || this.searchForm.createTimeRange == '') {
-        this.searchForm.statTime = ''
-        this.searchForm.endTime = ''
+    onSearch (param) {
+      if (this.createTimeRange == null || this.createTimeRange == '') {
+        param.statTime = ''
+        param.endTime = ''
       } else {
-        this.searchForm.statTime = this.formateDate(this.searchForm.createTimeRange[0])
-        this.searchForm.endTime = this.formateDate(this.searchForm.createTimeRange[1])
+        param.statTime = this.formateDate(this.createTimeRange[0])
+        param.endTime = this.formateDate(this.createTimeRange[1])
       }
-      this.searchForm.createTimeRange = ''
+      getServiceHistoryList(param).then(res => {
+        if (res.data.code == 0){
+          this.page.currentPage = res.data.page.page
+          this.page.pageSize = res.data.page.limit
+          this.page.totalPage = res.data.page.totalPages
+          this.page.totalSize = res.data.page.totalRows
+          this.currentServiceInfo = res.data.data
+        } else if (res.data.code === 3) {
+          alert('登录已过期，请重新登录')
+          this.$router.push({ path:'/login'} );
+        }
+      })
+    },
+    getServiceHistoryList(param) {
       getServiceHistoryList(param).then(res => {
         // console.log('历史服务信息res是', res)
         if (res.data.code == 0){
@@ -126,7 +139,7 @@ export default {
       })
     },
     handlePageChange(item) {
-      const para = { currentPage: item.currentPage, pageSize: item.pageSize };
+      const para = { page: item.currentPage, limit: item.pageSize };
       this.getServiceHistoryList(para);
     },
     mouseEnter (data) {

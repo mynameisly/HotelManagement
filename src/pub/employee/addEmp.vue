@@ -3,7 +3,7 @@
     <el-dialog :title="title" :visible.sync="visible" top="0.5rem" :lock-scroll="false" :show-close="false" :close-on-click-modal="false">
       <el-form ref="empForm" :model="item" :rules="rules" label-width="100px">
         <el-form-item label="账号:" prop="number">
-          <el-input v-model="item.number"  palceholder="请输入账号" clearable/>
+          <el-input v-model="item.number"  palceholder="账号长度必须在6-16之间，且不能包含非法字符*#@等" clearable/>
         </el-form-item>
         <el-form-item label="姓名:" prop="readName">
           <el-input v-model="item.readName"  palceholder="请输入姓名" clearable/>
@@ -66,6 +66,20 @@ export default {
     default: 'title'
   },
   data () {
+    const validateNumber = (rule, value, callback) => {
+      var reg = /^[0-9a-zA-Z]{6,16}$/; // 账号长度必须在6-16之间，且不能包含非法字符*#@
+      if (value === '' || value === undefined) {
+        callback(new Error('请输入账号'))
+      } else if (value.length < 6 || value.length > 18) {
+        callback(new Error('用户名长度必须在6-16之间'))
+      } else if (value.indexOf('*') > 0 || value.indexOf('#') > 0 || value.indexOf('@') > 0 || value.indexOf('&') > 0) {
+        callback(new Error('用户名不能含有非法字符*&#@'))
+      } else {
+        if (reg.test(value)) {
+          callback()
+        }
+      }
+    }
     const validateTelPhone = (rule, value, callback) => { // 验证手机号码
       if (value === '') {
         callback(new Error('请输入手机号码'))
@@ -96,7 +110,7 @@ export default {
         headImg: ''
       },
       rules: {
-        number: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+        number: [{ required: true, validator: validateNumber, trigger: 'blur' }],
         readName: [{ required: true, message: '请输入姓名', trigger: 'change' }],
         sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
         position: [{ required: true, message: '请选择职位', trigger: 'blur' }],
