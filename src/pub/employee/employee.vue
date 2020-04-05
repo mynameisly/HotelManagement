@@ -169,8 +169,10 @@ export default {
       })
     },
     update (item) {
+      // console.log('修改员工信息',item)
       const param = {
         employeeId: item.employeeId,
+        positionId: item.positionId,
         readName: item.readName,
         telPhone: item.telPhone,
         email: item.email,
